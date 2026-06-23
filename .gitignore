@@ -1,0 +1,18 @@
+# Dependências
+backend/node_modules/
+
+# Build
+backend/dist/
+
+# Variáveis de ambiente — NUNCA commitar
+backend/.env
+.env
+
+# Uploads e arquivos temporários
+*.xlsx
+*.pptx
+uploads/
+
+# Sistema
+.DS_Store
+Thumbs.db
