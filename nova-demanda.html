@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Demanda — C&D Cia de Talentos</title>
+  <title>Buscador C&D — Cia de Talentos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,7 +15,6 @@
       --verde-lima: #b0e600;
       --verde: #00a85c;
       --azul: #004fce;
-      --roxo: #2e22b8;
       --cinza-claro: #f5f5f5;
       --cinza-borda: #e0e0e0;
       --cinza-texto: #555;
@@ -36,71 +35,41 @@
       align-items: stretch;
       height: 64px;
     }
-
     .header-logo {
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
     }
-
     .logo-c {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       background: var(--vermelho);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 900;
-      color: white;
-      letter-spacing: -1px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: white;
+      letter-spacing: -1px; flex-shrink: 0;
     }
-
-    .logo-texto {
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      line-height: 1.2;
-    }
-
-    .logo-sub {
-      color: #888;
-      font-size: 11px;
-      font-weight: 400;
-    }
+    .logo-texto { color: white; font-size: 15px; font-weight: 700; line-height: 1.2; }
+    .logo-sub { color: #888; font-size: 11px; font-weight: 400; }
 
     /* NAV */
     nav {
       background: var(--vermelho);
       padding: 0 40px;
       display: flex;
-      gap: 0;
     }
-
     nav a {
       color: rgba(255,255,255,0.75);
       text-decoration: none;
       padding: 0 20px;
       height: 44px;
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 500;
+      display: flex; align-items: center;
+      font-size: 14px; font-weight: 500;
       border-bottom: 3px solid transparent;
       transition: all 0.15s;
     }
-
     nav a:hover { color: white; }
-
-    nav a.ativo {
-      color: white;
-      font-weight: 700;
-      border-bottom-color: var(--verde-lima);
-    }
+    nav a.ativo { color: white; font-weight: 700; border-bottom-color: var(--verde-lima); }
 
     /* LAYOUT */
     .container {
@@ -108,25 +77,10 @@
       margin: 40px auto;
       padding: 0 24px;
     }
-
-    .page-title {
-      margin-bottom: 28px;
-    }
-
-    .page-title h1 {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--preto);
-      line-height: 1.1;
-    }
-
+    .page-title { margin-bottom: 28px; }
+    .page-title h1 { font-size: 28px; font-weight: 900; color: var(--preto); line-height: 1.1; }
     .page-title h1 span { color: var(--vermelho); }
-
-    .page-title p {
-      font-size: 14px;
-      color: var(--cinza-texto);
-      margin-top: 6px;
-    }
+    .page-title p { font-size: 14px; color: var(--cinza-texto); margin-top: 6px; }
 
     /* CARD */
     .card {
@@ -137,34 +91,21 @@
       border-top: 4px solid var(--vermelho);
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
-
     .card h2 {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 14px; font-weight: 700;
       color: var(--vermelho);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      text-transform: uppercase; letter-spacing: 1px;
       margin-bottom: 24px;
     }
 
     /* FORM */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
-
-    .campo {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
+    .campo { display: flex; flex-direction: column; gap: 6px; }
     label {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 11px; font-weight: 700;
       color: var(--preto);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
+      text-transform: uppercase; letter-spacing: 0.8px;
     }
-
     input, select, textarea {
       padding: 11px 14px;
       border: 1.5px solid var(--cinza-borda);
@@ -175,45 +116,55 @@
       background: var(--branco);
       transition: border 0.15s;
     }
-
     input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--vermelho);
+      outline: none; border-color: var(--vermelho);
     }
-
     textarea { resize: vertical; min-height: 80px; }
+    .form-grid { display: flex; flex-direction: column; gap: 18px; }
 
-    .form-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    /* BOTÃO */
+    /* BOTÕES */
     .btn-primary {
-      background: var(--vermelho);
-      color: white;
-      border: none;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 700;
+      background: var(--vermelho); color: white;
+      border: none; padding: 14px 32px;
+      font-size: 15px; font-weight: 700;
       font-family: 'Roboto', Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 8px;
-      transition: background 0.15s, transform 0.1s;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      border-radius: 4px; cursor: pointer; width: 100%;
+      margin-top: 8px; transition: background 0.15s, transform 0.1s;
     }
-
     .btn-primary:hover { background: #cc1a22; transform: translateY(-1px); }
     .btn-primary:disabled { background: #f5a0a3; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: transparent; color: var(--preto);
+      border: 2px solid var(--preto);
+      padding: 10px 18px;
+      font-size: 12px; font-weight: 700;
+      font-family: 'Roboto', Arial, sans-serif;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      border-radius: 4px; cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-secondary:hover { background: var(--preto); color: white; }
+
+    .btn-salvar {
+      display: none;
+      margin-top: 16px;
+      background: var(--preto); color: white;
+      border: none; padding: 14px 28px;
+      font-size: 15px; font-weight: 700;
+      font-family: 'Roboto', Arial, sans-serif;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      border-radius: 4px; cursor: pointer; width: 100%;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-salvar:hover { background: #333; transform: translateY(-1px); }
+    .btn-salvar:disabled { background: #aaa; cursor: not-allowed; transform: none; }
 
     /* SPINNER */
     .spinner { display: none; text-align: center; padding: 24px; }
     .spinner.ativo { display: block; }
-
     .dot-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
     .dot {
       width: 10px; height: 10px; border-radius: 50%;
@@ -222,202 +173,214 @@
     .dot:nth-child(1) { background: var(--vermelho); animation-delay: 0s; }
     .dot:nth-child(2) { background: var(--azul); animation-delay: 0.2s; }
     .dot:nth-child(3) { background: var(--verde-lima); animation-delay: 0.4s; }
-
     @keyframes bounce {
       0%,80%,100% { transform: scale(0.6); opacity: 0.5; }
       40% { transform: scale(1); opacity: 1; }
     }
-
     .spinner p { font-size: 13px; color: var(--cinza-texto); font-weight: 500; }
 
-    /* RESULTADO */
-    #resultado { display: none; }
-
+    /* MENSAGENS */
     .msg-status {
-      padding: 16px 20px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 24px;
-      border-left: 4px solid;
+      padding: 16px 20px; border-radius: 4px;
+      font-size: 14px; font-weight: 500;
+      margin-bottom: 20px; border-left: 4px solid;
     }
+    .msg-ok    { background: #e8f8f0; color: #065f46; border-color: var(--verde); }
+    .msg-erro  { background: #fef0f0; color: #991b1b; border-color: var(--vermelho); }
+    .msg-aviso { background: #fff8e6; color: #92400e; border-color: #f59e0b; }
 
-    .msg-ok      { background: #e8f8f0; color: #065f46; border-color: var(--verde); }
-    .msg-erro    { background: #fef0f0; color: #991b1b; border-color: var(--vermelho); }
-    .msg-aviso   { background: #fff8e6; color: #92400e; border-color: #f59e0b; }
+    .msg-salvo {
+      background: #e8f8f0; border-left: 4px solid var(--verde);
+      padding: 16px 20px; border-radius: 4px;
+      font-size: 14px; color: #065f46; font-weight: 500;
+      margin-top: 16px;
+    }
+    .msg-salvo a { color: var(--vermelho); font-weight: 700; }
 
+    /* CONSULTORA CARDS */
     .secao-titulo {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--cinza-texto);
-      margin-bottom: 14px;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--cinza-texto); margin-bottom: 14px;
     }
 
     .consultora-card {
       border: 1.5px solid var(--cinza-borda);
-      border-radius: 4px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 10px;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      border-radius: 4px; padding: 16px 20px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 16px;
+      margin-bottom: 10px; cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .consultora-card:hover { border-color: var(--preto); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .consultora-card.selecionada {
+      border-color: var(--preto); background: #f9f9f9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
 
-    .consultora-card:hover {
-      border-color: var(--vermelho);
-      box-shadow: 0 2px 8px rgba(238,34,43,0.1);
+    .card-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+
+    .consultora-checkbox {
+      width: 20px; height: 20px;
+      accent-color: var(--preto);
+      cursor: pointer; flex-shrink: 0;
     }
 
     .consultora-ordem {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--cinza-borda);
-      min-width: 32px;
+      font-size: 28px; font-weight: 900;
+      color: var(--cinza-borda); min-width: 32px;
     }
+    .consultora-card.selecionada .consultora-ordem { color: var(--preto); }
 
-    .consultora-info h3 {
-      font-size: 15px;
-      font-weight: 700;
-    }
+    .consultora-info h3 { font-size: 15px; font-weight: 700; }
+    .consultora-info p { font-size: 12px; color: var(--cinza-texto); margin-top: 2px; }
+    .consultora-slots { font-size: 12px; color: var(--azul); font-weight: 500; margin-top: 4px; }
 
-    .consultora-info p {
-      font-size: 12px;
-      color: var(--cinza-texto);
-      margin-top: 2px;
-    }
-
-    .consultora-slots {
-      font-size: 12px;
-      color: var(--azul);
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
-    .nota-badge {
-      text-align: center;
-      min-width: 64px;
-    }
-
+    .nota-badge { text-align: center; min-width: 56px; }
     .nota-num {
-      width: 48px;
-      height: 48px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 900;
-      margin: 0 auto;
+      width: 44px; height: 44px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; margin: 0 auto;
     }
-
     .nota-3 { background: var(--verde); color: white; }
     .nota-2 { background: var(--azul); color: white; }
-
     .nota-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--cinza-texto);
-      margin-top: 4px;
-      letter-spacing: 0.5px;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; color: var(--cinza-texto);
+      margin-top: 4px; letter-spacing: 0.5px;
     }
 
-    .aviso-acionamento {
-      background: #f0f4ff;
-      border-left: 4px solid var(--azul);
-      padding: 14px 18px;
-      border-radius: 4px;
-      font-size: 13px;
-      color: var(--azul);
-      font-weight: 500;
-      margin-top: 16px;
-    }
-
-    .aviso-acionamento a { color: var(--vermelho); font-weight: 700; }
-
-    .btn-confirm {
-      margin-top: 20px;
-      background: var(--preto);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: 'Roboto', Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.15s, transform 0.1s;
-    }
-
-    .btn-confirm:hover { background: #333; transform: translateY(-1px); }
-    .btn-confirm:disabled { background: #aaa; cursor: not-allowed; transform: none; }
-
-    .msg-acionado {
-      background: #e8f8f0;
-      border-left: 4px solid var(--verde);
-      padding: 16px 20px;
-      border-radius: 4px;
-      font-size: 14px;
-      color: #065f46;
-      font-weight: 500;
-      margin-top: 16px;
-    }
-
-    .msg-acionado a { color: var(--vermelho); font-weight: 700; }
-
-    /* Campos condicionais */
+    /* CAMPOS CONDICIONAIS */
     .campo-condicional { display: none; }
     .campo-condicional.visivel { display: flex; }
-
     .aviso-inline {
-      font-size: 12px;
-      color: var(--azul);
+      font-size: 12px; color: var(--azul);
       background: #e8f0fe;
       border-left: 3px solid var(--azul);
       border-radius: 0 4px 4px 0;
-      padding: 8px 12px;
-      margin-top: -8px;
+      padding: 8px 12px; margin-top: -8px;
     }
 
-    .label-opcional {
-      font-weight: 400;
-      color: #aaa;
-      font-size: 10px;
-      text-transform: none;
-      letter-spacing: 0;
-      margin-left: 4px;
+    /* DEMANDA ID */
+    .demanda-id { font-size: 11px; color: #aaa; margin-top: 6px; font-family: monospace; }
+
+    /* CSV SECTION */
+    .card-csv {
+      background: var(--branco);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-top: 4px solid var(--preto);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
     }
 
-    .demanda-id {
-      font-size: 11px;
-      color: #aaa;
-      margin-top: 6px;
-      font-family: monospace;
+    .csv-toggle {
+      width: 100%; text-align: left;
+      padding: 20px 36px;
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    .csv-toggle-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--preto);
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .csv-toggle-seta {
+      font-size: 12px; color: var(--cinza-texto);
+      transition: transform 0.2s;
+    }
+    .csv-toggle.aberto .csv-toggle-seta { transform: rotate(180deg); }
+
+    .csv-body {
+      display: none;
+      padding: 0 36px 36px;
+    }
+    .csv-body.aberto { display: block; }
+
+    .csv-desc {
+      font-size: 13px; color: var(--cinza-texto);
+      margin-bottom: 20px; line-height: 1.6;
     }
 
-    /* ACENTO GEOMÉTRICO */
+    .csv-upload-area {
+      border: 2px dashed var(--cinza-borda);
+      border-radius: 4px; padding: 28px;
+      text-align: center; cursor: pointer;
+      margin: 16px 0; transition: border-color 0.15s, background 0.15s;
+    }
+    .csv-upload-area:hover, .csv-upload-area.dragover {
+      border-color: var(--preto); background: #fafafa;
+    }
+    .csv-upload-area p { font-size: 13px; color: var(--cinza-texto); margin: 0; }
+    .csv-upload-area small { font-size: 11px; color: #aaa; }
+    .csv-nome-arquivo {
+      font-size: 13px; font-weight: 700; color: var(--preto); margin-top: 8px;
+    }
+
+    /* BULK RESULTS TABLE */
+    .bulk-wrapper { margin-top: 24px; }
+    .bulk-wrapper .secao-titulo { margin-bottom: 12px; }
+
+    .bulk-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+    .bulk-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--cinza-texto); padding: 10px 12px;
+      border-bottom: 2px solid var(--cinza-borda);
+      white-space: nowrap;
+    }
+    .bulk-table td {
+      padding: 12px; border-bottom: 1px solid var(--cinza-borda);
+      vertical-align: middle;
+    }
+    .bulk-table tr.linha-ok:hover td { background: #fafafa; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .pill-ok    { background: #e8f8f0; color: #065f46; }
+    .pill-erro  { background: #fef0f0; color: #991b1b; }
+    .pill-aviso { background: #fff8e6; color: #92400e; }
+    .pill-carregando { background: #f0f0f0; color: #666; }
+
+    .bulk-checkbox {
+      width: 18px; height: 18px;
+      accent-color: var(--preto); cursor: pointer;
+    }
+
+    .btn-salvar-bulk {
+      display: none; margin-top: 20px;
+      background: var(--preto); color: white;
+      border: none; padding: 14px 28px;
+      font-size: 14px; font-weight: 700;
+      font-family: 'Roboto', Arial, sans-serif;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      border-radius: 4px; cursor: pointer; width: 100%;
+      transition: background 0.15s;
+    }
+    .btn-salvar-bulk:hover { background: #333; }
+    .btn-salvar-bulk:disabled { background: #aaa; cursor: not-allowed; }
+
+    /* GEO BAR */
     .geo-bar {
       height: 4px;
       background: linear-gradient(to right,
-        var(--vermelho) 33%,
-        var(--verde-lima) 33% 66%,
-        var(--azul) 66%);
-      margin-bottom: 0;
+        var(--vermelho) 33%, var(--verde-lima) 33% 66%, var(--azul) 66%);
     }
 
     @media (max-width: 600px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
       header { padding: 0 20px; }
       nav { padding: 0 20px; }
       .container { padding: 0 16px; margin: 24px auto; }
-      .card { padding: 24px 20px; }
+      .card, .csv-body { padding: 24px 20px; }
+      .csv-toggle { padding: 16px 20px; }
     }
   </style>
 </head>
@@ -436,7 +399,7 @@
 </header>
 
 <nav>
-  <a href="nova-demanda.html" class="ativo">Nova Demanda</a>
+  <a href="nova-demanda.html" class="ativo">Busca</a>
   <a href="painel.html">Painel</a>
 </nav>
 
@@ -444,11 +407,12 @@
 
   <div class="page-title">
     <h1>Quem vai conduzir <span>essa entrega?</span></h1>
-    <p>Preencha os dados e o sistema encontra a consultora com a skill certa e agenda livre.</p>
+    <p>Consulte disponibilidade, selecione as consultoras e salve no Painel para acionar.</p>
   </div>
 
+  <!-- BUSCA INDIVIDUAL -->
   <div class="card">
-    <h2>Dados da Demanda</h2>
+    <h2>Busca Individual</h2>
     <form id="formDemanda" class="form-grid">
 
       <div class="grid-2">
@@ -490,7 +454,6 @@
         </div>
       </div>
 
-      <!-- Mentoring Lab: número de sessões -->
       <div class="campo campo-condicional" id="campo-num-sessoes">
         <label>Número de sessões *</label>
         <input type="number" id="numSessoes" min="1" max="20" step="1" placeholder="Ex: 4">
@@ -518,26 +481,96 @@
       </div>
 
       <button type="submit" class="btn-primary" id="btnBuscar">
-        Buscar Consultoras Disponíveis
+        Consultar Disponibilidade
       </button>
 
     </form>
   </div>
 
-  <!-- Spinner -->
+  <!-- SPINNER -->
   <div class="spinner" id="spinner">
     <div class="dot-row">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
     <p>Consultando agenda e buscando consultoras disponíveis...</p>
   </div>
 
-  <!-- Resultado -->
-  <div class="card" id="resultado">
-    <h2>Resultado do Matching</h2>
+  <!-- RESULTADO INDIVIDUAL -->
+  <div class="card" id="resultado" style="display:none">
+    <h2>Resultado da Consulta</h2>
     <div id="conteudoResultado"></div>
+    <button class="btn-salvar" id="btnSalvarPainel" onclick="salvarNoPainel()">
+      Salvar 0 no Painel →
+    </button>
+  </div>
+
+  <!-- CONSULTA EM VOLUME (CSV) -->
+  <div class="card-csv">
+    <button class="csv-toggle" id="btnToggleCSV" onclick="toggleCSV()" type="button">
+      <span class="csv-toggle-title">📊 Consulta em Volume — CSV</span>
+      <span class="csv-toggle-seta">▼</span>
+    </button>
+    <div class="csv-body" id="csvBody">
+      <p class="csv-desc">
+        Faça várias consultas de uma vez. Baixe o modelo, preencha com as demandas do time e suba o arquivo.
+        As consultas não gravam no banco — só o que você selecionar e salvar vai para o Painel.
+      </p>
+      <button class="btn-secondary" onclick="baixarTemplate()" type="button">
+        ⬇ Baixar Modelo CSV
+      </button>
+
+      <div class="csv-upload-area" id="uploadArea"
+           onclick="document.getElementById('csvFile').click()"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event)">
+        <input type="file" id="csvFile" accept=".csv" onchange="onFileSelected(this)">
+        <p>📎 Clique para selecionar o CSV</p>
+        <small>ou arraste o arquivo aqui</small>
+        <p class="csv-nome-arquivo" id="csvNomeArquivo" style="display:none"></p>
+      </div>
+
+      <button class="btn-primary" id="btnProcessarCSV"
+              onclick="processarCSV()" type="button" disabled
+              style="margin-top:0">
+        Processar Consultas
+      </button>
+
+      <!-- Progresso -->
+      <div id="csvProgresso" style="display:none; margin-top:16px;">
+        <div class="spinner ativo" style="padding:12px 0;">
+          <div class="dot-row">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <p id="csvProgressoTexto">Processando...</p>
+        </div>
+      </div>
+
+      <!-- Resultados bulk -->
+      <div class="bulk-wrapper" id="bulkWrapper" style="display:none">
+        <p class="secao-titulo" id="bulkTitulo"></p>
+        <div style="overflow-x:auto">
+          <table class="bulk-table" id="bulkTabela">
+            <thead>
+              <tr>
+                <th style="width:36px">✓</th>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Skill</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Consultoras encontradas</th>
+              </tr>
+            </thead>
+            <tbody id="bulkTbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-salvar-bulk" id="btnSalvarBulk"
+                onclick="salvarBulkNoPainel()" type="button">
+          Salvar selecionadas no Painel →
+        </button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -545,88 +578,81 @@
 <script>
   const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api'
 
-  // Resultado atual (para acionamento manual)
-  let _resultadoAtual = null
-
-  // Skills do portfólio — usadas como fallback se o backend não estiver disponível
+  // Skills fallback
   const SKILLS_FALLBACK = [
-    'Alinhamento de Expectativas',
-    'Autoconhecimento e Identidade Profissional',
-    'Colaboração e Diversidade',
-    'Comunicação e Feedback',
-    'FACET5',
-    'Gestão de Conflitos e Mudanças',
-    'Gestão de Projetos',
-    'Influência e Persuasão',
-    'Inovação, Criatividade e Curiosidade',
-    'Inteligência Emocional e Autogestão',
-    'Mentores',
-    'Mentorados',
-    'Mindset Digital e IA First',
-    'Pensamento Crítico e Tomada de Decisão',
-    'Pesquisa Espelho',
-    'Princípios de Liderança',
-    'Protagonismo e Autorresponsabilidade',
-    'Recognita',
-    'Ritual de Passagem',
+    'Alinhamento de Expectativas','Autoconhecimento e Identidade Profissional',
+    'Colaboração e Diversidade','Comunicação e Feedback','FACET5',
+    'Gestão de Conflitos e Mudanças','Gestão de Projetos','Influência e Persuasão',
+    'Inovação, Criatividade e Curiosidade','Inteligência Emocional e Autogestão',
+    'Mentores','Mentorados','Mindset Digital e IA First',
+    'Pensamento Crítico e Tomada de Decisão','Pesquisa Espelho',
+    'Princípios de Liderança','Protagonismo e Autorresponsabilidade',
+    'Recognita','Ritual de Passagem',
   ]
 
+  // Estado da busca individual
+  let _resultadoAtual = null
+  let _selecionadas = new Set() // consultora_ids selecionadas
+
+  // Estado do CSV bulk
+  let _csvLinhas = []   // linhas parsed do CSV
+  let _bulkResultados = [] // { idx, dados, body, demanda_id? }
+  let _bulkSelecionadas = new Set() // índices selecionados
+
+  // ── SKILLS ────────────────────────────────────────────────────────
   async function carregarSkills() {
     const sel = document.getElementById('skill')
     try {
       const res = await fetch(`${API}/skills`, { signal: AbortSignal.timeout(4000) })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      if (!res.ok) throw new Error()
       const skills = await res.json()
-      if (!Array.isArray(skills) || skills.length === 0) throw new Error('lista vazia')
+      if (!Array.isArray(skills) || !skills.length) throw new Error()
       sel.innerHTML = '<option value="">Selecione o tema</option>'
       skills.forEach(s => {
-        const opt = document.createElement('option')
-        opt.value = s.nome
-        opt.textContent = s.nome
-        sel.appendChild(opt)
+        const o = document.createElement('option')
+        o.value = s.nome; o.textContent = s.nome
+        sel.appendChild(o)
       })
     } catch {
-      // Fallback: usa os temas do portfólio
       sel.innerHTML = '<option value="">Selecione o tema</option>'
       SKILLS_FALLBACK.forEach(nome => {
-        const opt = document.createElement('option')
-        opt.value = nome
-        opt.textContent = nome
-        sel.appendChild(opt)
+        const o = document.createElement('option')
+        o.value = nome; o.textContent = nome
+        sel.appendChild(o)
       })
-      // Aviso discreto abaixo do select
-      const aviso = document.createElement('p')
-      aviso.style.cssText = 'font-size:11px;color:#aaa;margin-top:4px;'
-      aviso.textContent = 'Usando lista local — conecte o backend para sincronizar.'
-      sel.parentNode.appendChild(aviso)
+      const av = document.createElement('p')
+      av.style.cssText = 'font-size:11px;color:#aaa;margin-top:4px;'
+      av.textContent = 'Usando lista local — conecte o backend para sincronizar.'
+      sel.parentNode.appendChild(av)
     }
   }
 
-  // ── Lógica de campos dinâmicos por formato ─────────────────────────
+  // ── FORMATO CONDICIONAL ───────────────────────────────────────────
   function onFormatoChange() {
-    const formato = document.getElementById('formato').value
-    const isMentoring = formato === 'Mentoring Lab'
-
-    // Número de sessões (só Mentoring Lab)
-    const campoSessoes = document.getElementById('campo-num-sessoes')
-    campoSessoes.classList.toggle('visivel', isMentoring)
+    const isMentoring = document.getElementById('formato').value === 'Mentoring Lab'
+    const campo = document.getElementById('campo-num-sessoes')
+    campo.classList.toggle('visivel', isMentoring)
     document.getElementById('numSessoes').required = isMentoring
   }
 
+  // ── SUBMIT BUSCA INDIVIDUAL ───────────────────────────────────────
   document.getElementById('formDemanda').addEventListener('submit', async (e) => {
     e.preventDefault()
     const btn = document.getElementById('btnBuscar')
     const spinner = document.getElementById('spinner')
     const resultado = document.getElementById('resultado')
 
-    btn.disabled = true
-    btn.textContent = 'Buscando...'
-    spinner.classList.add('ativo')
+    // Reset seleção anterior
+    _selecionadas.clear()
+    _resultadoAtual = null
     resultado.style.display = 'none'
+
+    btn.disabled = true
+    btn.textContent = 'Consultando...'
+    spinner.classList.add('ativo')
 
     const formato = document.getElementById('formato').value
     const numSessoesVal = document.getElementById('numSessoes').value
-
     const body = {
       cliente:        document.getElementById('cliente').value,
       skill:          document.getElementById('skill').value,
@@ -652,7 +678,7 @@
       mostrarErroConexao()
     } finally {
       btn.disabled = false
-      btn.textContent = 'Buscar Consultoras Disponíveis'
+      btn.textContent = 'Consultar Disponibilidade'
       spinner.classList.remove('ativo')
     }
   })
@@ -661,8 +687,8 @@
     const div = document.getElementById('conteudoResultado')
     const resultado = document.getElementById('resultado')
     resultado.style.display = 'block'
+    document.getElementById('btnSalvarPainel').style.display = 'none'
 
-    // Resposta de erro do servidor (validação, crash, etc.)
     if (dados.erro) {
       div.innerHTML = `
         <div class="msg-status msg-erro">
@@ -674,32 +700,32 @@
     }
 
     const msgMap = {
-      consultoras_encontradas:  { cls: 'msg-ok',    icone: '✅' },
-      ok:                       { cls: 'msg-ok',    icone: '✅' },
-      sem_consultora_elegivel:  { cls: 'msg-erro',  icone: '❌' },
-      sem_disponibilidade:      { cls: 'msg-aviso', icone: '⚠️' },
-      erro_graph:               { cls: 'msg-aviso', icone: '⚠️' },
+      consultoras_encontradas: { cls: 'msg-ok',    icone: '✅' },
+      ok:                      { cls: 'msg-ok',    icone: '✅' },
+      sem_consultora_elegivel: { cls: 'msg-erro',  icone: '❌' },
+      sem_disponibilidade:     { cls: 'msg-aviso', icone: '⚠️' },
+      erro_graph:              { cls: 'msg-aviso', icone: '⚠️' },
     }
-
     const m = msgMap[dados.status] ?? { cls: 'msg-aviso', icone: 'ℹ️' }
     const mensagem = dados.mensagem ?? dados.status ?? 'Resposta desconhecida do servidor'
 
     let html = `<div class="msg-status ${m.cls}">${m.icone} ${mensagem}</div>`
-
-    if (dados.demanda_id) {
-      html += `<p class="demanda-id">ID: ${dados.demanda_id}</p>`
-    }
+    if (dados.demanda_id) html += `<p class="demanda-id">ID: ${dados.demanda_id}</p>`
 
     if (dados.selecionadas?.length) {
       html += `<p class="secao-titulo" style="margin-top:24px;">
-                Consultoras selecionadas (${dados.selecionadas.length})
-               </p>`
+        Consultoras disponíveis — selecione as que deseja salvar no Painel
+      </p>`
 
       dados.selecionadas.forEach((c, i) => {
         const slots = c.slotsLivres?.map(s => `${s.inicio}–${s.fim}`).join(', ') || 'disponível'
         html += `
-          <div class="consultora-card">
-            <div style="display:flex;align-items:center;gap:16px;">
+          <div class="consultora-card" id="card-${c.consultora_id}"
+               onclick="toggleCard('${c.consultora_id}')">
+            <div class="card-left">
+              <input type="checkbox" class="consultora-checkbox"
+                     id="chk-${c.consultora_id}"
+                     onclick="event.stopPropagation(); toggleCard('${c.consultora_id}')">
               <div class="consultora-ordem">${i + 1}</div>
               <div class="consultora-info">
                 <h3>${c.nome}</h3>
@@ -711,23 +737,67 @@
               <div class="nota-num nota-${c.nota}">${c.nota}</div>
               <div class="nota-label">${c.nivel}</div>
             </div>
-          </div>
-        `
+          </div>`
       })
-
-      const primeira = dados.selecionadas[0]
-      html += `
-        <button class="btn-confirm" id="btnAcionar" onclick="acionar()">
-          📧 Enviar convite para ${primeira.nome} →
-        </button>
-        <p style="font-size:12px;color:#aaa;margin-top:8px;text-align:center;">
-          Nenhum e-mail foi enviado ainda. Confirme para acionar a primeira consultora da lista.
-        </p>
-      `
     }
 
     div.innerHTML = html
     resultado.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  function toggleCard(consultora_id) {
+    const chk = document.getElementById(`chk-${consultora_id}`)
+    const card = document.getElementById(`card-${consultora_id}`)
+    chk.checked = !chk.checked
+    if (chk.checked) {
+      _selecionadas.add(consultora_id)
+      card.classList.add('selecionada')
+    } else {
+      _selecionadas.delete(consultora_id)
+      card.classList.remove('selecionada')
+    }
+    atualizarBotaoSalvar()
+  }
+
+  function atualizarBotaoSalvar() {
+    const n = _selecionadas.size
+    const btn = document.getElementById('btnSalvarPainel')
+    btn.style.display = n > 0 ? 'block' : 'none'
+    btn.textContent = `Salvar ${n} consultora${n !== 1 ? 's' : ''} no Painel →`
+  }
+
+  async function salvarNoPainel() {
+    if (!_resultadoAtual?.demanda_id || _selecionadas.size === 0) return
+    const btn = document.getElementById('btnSalvarPainel')
+    btn.disabled = true
+    btn.textContent = 'Salvando...'
+
+    try {
+      const res = await fetch(`${API}/demandas/${_resultadoAtual.demanda_id}/selecionar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_ids: [..._selecionadas] }),
+      })
+      if (res.ok) {
+        const div = document.getElementById('conteudoResultado')
+        div.insertAdjacentHTML('beforeend', `
+          <div class="msg-salvo">
+            ✅ Salvo no Painel! As consultoras selecionadas estão aguardando acionamento.<br>
+            <a href="painel.html" style="display:inline-block;margin-top:6px;">Ver no Painel →</a>
+          </div>
+        `)
+        btn.style.display = 'none'
+      } else {
+        const d = await res.json()
+        btn.disabled = false
+        atualizarBotaoSalvar()
+        alert(d.erro ?? 'Erro ao salvar.')
+      }
+    } catch {
+      btn.disabled = false
+      atualizarBotaoSalvar()
+      alert('Não foi possível conectar ao backend.')
+    }
   }
 
   function mostrarErroConexao() {
@@ -735,58 +805,232 @@
     document.getElementById('resultado').style.display = 'block'
     div.innerHTML = `
       <div class="msg-status msg-erro">
-        ❌ Não foi possível conectar ao backend.<br>
-        <small>Verifique se o servidor está rodando em http://localhost:3000</small>
-      </div>
-    `
+        ❌ Não foi possível conectar ao backend.
+      </div>`
   }
 
-  async function acionar() {
-    if (!_resultadoAtual?.demanda_id || !_resultadoAtual?.selecionadas?.length) return
+  // ── CSV SECTION ───────────────────────────────────────────────────
+  function toggleCSV() {
+    const btn = document.getElementById('btnToggleCSV')
+    const body = document.getElementById('csvBody')
+    btn.classList.toggle('aberto')
+    body.classList.toggle('aberto')
+  }
 
-    const btn = document.getElementById('btnAcionar')
-    const primeira = _resultadoAtual.selecionadas[0]
+  function baixarTemplate() {
+    const linhas = [
+      'cliente,skill,formato,data,duracao_minutos,modalidade,observacoes',
+      '"Empresa ABC","Comunicação e Feedback","Masterclass interativa","2026-07-10",120,"online",""',
+      '"Empresa XYZ","Inteligência Emocional e Autogestão","Skill Lab ou Mini Bootcamp","2026-07-15",240,"presencial","Foco em lideranças"',
+      '"Startup ZZZ","Mentores","Mentoring Lab","2026-07-20",60,"online","Ciclo de 4 sessões"',
+    ]
+    const csv = linhas.join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = 'modelo-consulta-ced.csv'
+    a.click(); URL.revokeObjectURL(url)
+  }
 
-    btn.disabled = true
-    btn.textContent = 'Enviando convite...'
+  function onFileSelected(input) {
+    const file = input.files[0]
+    if (!file) return
+    const nome = document.getElementById('csvNomeArquivo')
+    nome.textContent = `📄 ${file.name}`
+    nome.style.display = 'block'
+    document.getElementById('btnProcessarCSV').disabled = false
+  }
 
-    try {
-      const res = await fetch(`${API}/demandas/${_resultadoAtual.demanda_id}/acionar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ consultora_id: primeira.consultora_id }),
-      })
-      const dados = await res.json()
+  function onDragOver(e) {
+    e.preventDefault()
+    document.getElementById('uploadArea').classList.add('dragover')
+  }
+  function onDragLeave(e) {
+    document.getElementById('uploadArea').classList.remove('dragover')
+  }
+  function onDrop(e) {
+    e.preventDefault()
+    document.getElementById('uploadArea').classList.remove('dragover')
+    const file = e.dataTransfer.files[0]
+    if (file && file.name.endsWith('.csv')) {
+      const input = document.getElementById('csvFile')
+      const dt = new DataTransfer(); dt.items.add(file)
+      input.files = dt.files
+      onFileSelected(input)
+    }
+  }
 
-      if (!res.ok) {
-        btn.disabled = false
-        btn.textContent = `📧 Enviar convite para ${primeira.nome} →`
-        const aviso = document.createElement('div')
-        aviso.className = 'msg-status msg-erro'
-        aviso.style.marginTop = '12px'
-        aviso.textContent = `❌ ${dados.erro ?? 'Erro ao acionar consultora'}`
-        btn.parentNode.insertBefore(aviso, btn.nextSibling)
-        return
+  function parseCSV(texto) {
+    const linhas = texto.trim().split(/\r?\n/)
+    const cabecalho = linhas[0].split(',').map(h => h.replace(/^"|"$/g, '').trim())
+    return linhas.slice(1).map((linha, idx) => {
+      // Parser simples de campos com aspas
+      const campos = []
+      let atual = ''; let dentroAspas = false
+      for (let i = 0; i < linha.length; i++) {
+        const c = linha[i]
+        if (c === '"') { dentroAspas = !dentroAspas }
+        else if (c === ',' && !dentroAspas) { campos.push(atual.trim()); atual = '' }
+        else { atual += c }
+      }
+      campos.push(atual.trim())
+      const obj = {}
+      cabecalho.forEach((h, i) => obj[h] = campos[i] ?? '')
+      obj._idx = idx
+      return obj
+    })
+  }
+
+  async function processarCSV() {
+    const file = document.getElementById('csvFile').files[0]
+    if (!file) return
+
+    const texto = await file.text()
+    _csvLinhas = parseCSV(texto)
+    _bulkResultados = []
+    _bulkSelecionadas.clear()
+
+    if (!_csvLinhas.length) {
+      alert('Arquivo vazio ou sem dados.')
+      return
+    }
+
+    document.getElementById('btnProcessarCSV').disabled = true
+    document.getElementById('csvProgresso').style.display = 'block'
+    document.getElementById('bulkWrapper').style.display = 'none'
+
+    for (let i = 0; i < _csvLinhas.length; i++) {
+      const linha = _csvLinhas[i]
+      document.getElementById('csvProgressoTexto').textContent =
+        `Processando ${i + 1} de ${_csvLinhas.length}...`
+
+      const body = {
+        cliente:        linha.cliente || `Demanda ${i + 1}`,
+        skill:          linha.skill || '',
+        formato:        linha.formato || 'Masterclass interativa',
+        data:           linha.data || '',
+        duracaoMinutos: parseInt(linha.duracao_minutos) || 60,
+        modalidade:     linha.modalidade || 'online',
+        observacoes:    linha.observacoes || undefined,
       }
 
-      // Sucesso — substitui o botão pelo aviso de confirmação
-      btn.parentNode.innerHTML = `
-        <div class="msg-acionado">
-          ✅ Convite enviado para <strong>${primeira.nome}</strong>!
-          Aguardando resposta por e-mail.<br>
-          <a href="painel.html" style="margin-top:6px;display:inline-block;">
-            Ver acompanhamento no Painel →
-          </a>
-        </div>
-      `
-    } catch {
-      btn.disabled = false
-      btn.textContent = `📧 Enviar convite para ${primeira.nome} →`
-      const aviso = document.createElement('div')
-      aviso.className = 'msg-status msg-erro'
-      aviso.style.marginTop = '12px'
-      aviso.textContent = '❌ Não foi possível conectar ao backend.'
-      btn.parentNode.insertBefore(aviso, btn.nextSibling)
+      let resultado = null
+      try {
+        // dry_run=true — só consulta, não grava no banco ainda
+        const res = await fetch(`${API}/demandas?dry_run=true`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+        resultado = await res.json()
+      } catch {
+        resultado = { erro: 'Erro de conexão' }
+      }
+      _bulkResultados.push({ idx: i, linha, body, dados: resultado })
+    }
+
+    document.getElementById('csvProgresso').style.display = 'none'
+    document.getElementById('btnProcessarCSV').disabled = false
+    renderizarBulkResultados()
+  }
+
+  function renderizarBulkResultados() {
+    const wrapper = document.getElementById('bulkWrapper')
+    const tbody = document.getElementById('bulkTbody')
+    const titulo = document.getElementById('bulkTitulo')
+    const ok = _bulkResultados.filter(r => r.dados.selecionadas?.length > 0).length
+    titulo.textContent = `${_bulkResultados.length} linhas processadas — ${ok} com consultoras disponíveis`
+    wrapper.style.display = 'block'
+
+    tbody.innerHTML = _bulkResultados.map(r => {
+      const d = r.dados
+      const temConsultoras = d.selecionadas?.length > 0
+      const statusInfo = d.erro
+        ? { cls: 'pill-erro', label: `❌ ${d.erro}` }
+        : d.status === 'consultoras_encontradas' || d.status === 'ok'
+          ? { cls: 'pill-ok', label: `✅ ${d.selecionadas.length} encontrada(s)` }
+          : d.status === 'sem_consultora_elegivel'
+            ? { cls: 'pill-erro', label: '❌ Sem consultoras para essa skill' }
+            : { cls: 'pill-aviso', label: '⚠️ Sem disponibilidade nessa data' }
+
+      const nomes = d.selecionadas?.map(c => c.nome).join(', ') || '—'
+
+      return `<tr class="${temConsultoras ? 'linha-ok' : ''}">
+        <td>
+          ${temConsultoras
+            ? `<input type="checkbox" class="bulk-checkbox" id="bchk-${r.idx}"
+                      onchange="toggleBulk(${r.idx})">`
+            : '—'}
+        </td>
+        <td style="color:#aaa;font-size:12px;">${r.idx + 1}</td>
+        <td><strong>${r.linha.cliente || '—'}</strong></td>
+        <td style="font-size:12px;">${r.linha.skill || '—'}</td>
+        <td style="font-size:12px;white-space:nowrap;">${r.linha.data || '—'}</td>
+        <td><span class="status-pill ${statusInfo.cls}">${statusInfo.label}</span></td>
+        <td style="font-size:12px;color:var(--cinza-texto);">${nomes}</td>
+      </tr>`
+    }).join('')
+
+    atualizarBotaoSalvarBulk()
+  }
+
+  function toggleBulk(idx) {
+    const chk = document.getElementById(`bchk-${idx}`)
+    if (chk.checked) _bulkSelecionadas.add(idx)
+    else _bulkSelecionadas.delete(idx)
+    atualizarBotaoSalvarBulk()
+  }
+
+  function atualizarBotaoSalvarBulk() {
+    const n = _bulkSelecionadas.size
+    const btn = document.getElementById('btnSalvarBulk')
+    btn.style.display = n > 0 ? 'block' : 'none'
+    btn.textContent = `Salvar ${n} demanda${n !== 1 ? 's' : ''} selecionada${n !== 1 ? 's' : ''} no Painel →`
+  }
+
+  async function salvarBulkNoPainel() {
+    if (_bulkSelecionadas.size === 0) return
+    const btn = document.getElementById('btnSalvarBulk')
+    btn.disabled = true; btn.textContent = 'Salvando...'
+
+    let salvos = 0; let erros = 0
+    for (const idx of _bulkSelecionadas) {
+      const r = _bulkResultados[idx]
+      if (!r || !r.dados.selecionadas?.length) continue
+
+      try {
+        // 1. Criar a demanda real no banco
+        const res1 = await fetch(`${API}/demandas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(r.body),
+        })
+        const d1 = await res1.json()
+        if (!d1.demanda_id) { erros++; continue }
+
+        // 2. Selecionar todas as consultoras encontradas
+        const consultora_ids = r.dados.selecionadas.map(c => c.consultora_id)
+        await fetch(`${API}/demandas/${d1.demanda_id}/selecionar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ consultora_ids }),
+        })
+        salvos++
+      } catch { erros++ }
+    }
+
+    btn.disabled = false
+    if (salvos > 0) {
+      document.getElementById('bulkWrapper').insertAdjacentHTML('afterend', `
+        <div class="msg-salvo" style="margin-top:16px;">
+          ✅ ${salvos} demanda${salvos !== 1 ? 's' : ''} salva${salvos !== 1 ? 's' : ''} no Painel!
+          ${erros > 0 ? `(${erros} com erro)` : ''}
+          <a href="painel.html" style="display:inline-block;margin-top:6px;">Ver no Painel →</a>
+        </div>`)
+      btn.style.display = 'none'
+    } else {
+      btn.textContent = `Salvar ${_bulkSelecionadas.size} no Painel →`
+      alert('Ocorreu um erro ao salvar. Tente novamente.')
     }
   }
 

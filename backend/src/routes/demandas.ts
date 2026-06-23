@@ -43,6 +43,30 @@ demandasRouter.post('/', async (req: Request, res: Response) => {
   }
 
   const body = parse.data
+  const dryRun = req.query.dry_run === 'true'
+
+  // ── DRY RUN: só matching, sem gravar no banco ───────────────────
+  if (dryRun) {
+    const matching = await executarMatching({
+      skillNome:      body.skill,
+      data:           body.data,
+      horaInicio:     body.horaInicio ?? '08:00',
+      horaFim:        body.horaFim    ?? '19:00',
+      duracaoMinutos: body.duracaoMinutos,
+      modalidade:     body.modalidade,
+    })
+    const novoStatus = matching.status === 'ok'
+      ? 'consultoras_encontradas'
+      : matching.status === 'sem_consultora_elegivel'
+      ? 'sem_consultora_elegivel'
+      : 'sem_disponibilidade'
+    return res.status(200).json({
+      status:      novoStatus,
+      mensagem:    matching.mensagem,
+      selecionadas: matching.selecionadas,
+      elegiveis:   matching.elegíveis,
+    })
+  }
 
   // 1. Buscar skill_id
   const { data: skill } = await supabase
@@ -151,6 +175,40 @@ demandasRouter.post('/:id/match', async (req: Request, res: Response) => {
     selecionadas: matching.selecionadas,
     elegiveis:   matching.elegíveis,
   })
+})
+
+// ----------------------------------------------------------------
+// POST /api/demandas/:id/selecionar
+// Usuário seleciona quais consultoras quer salvar no painel.
+// Muda status da demanda para aguardando_aceite.
+// Marca as sugestões escolhidas como 'acionada' (sem enviar e-mail).
+// ----------------------------------------------------------------
+demandasRouter.post('/:id/selecionar', async (req: Request, res: Response) => {
+  const { consultora_ids } = req.body as { consultora_ids: string[] }
+
+  if (!Array.isArray(consultora_ids) || consultora_ids.length === 0) {
+    return res.status(400).json({ erro: 'Informe ao menos uma consultora_id' })
+  }
+
+  const { error } = await supabase
+    .from('demandas')
+    .update({ status: 'aguardando_aceite' })
+    .eq('id', req.params.id)
+
+  if (error) {
+    return res.status(500).json({ erro: 'Erro ao atualizar demanda', detalhe: error.message })
+  }
+
+  // Marcar consultoras selecionadas (sem enviar e-mail ainda)
+  for (const cid of consultora_ids) {
+    await supabase
+      .from('sugestoes_consultoras')
+      .update({ status: 'acionada' })
+      .eq('demanda_id', req.params.id)
+      .eq('consultora_id', cid)
+  }
+
+  return res.json({ mensagem: 'Demanda salva no Painel com sucesso.' })
 })
 
 // ----------------------------------------------------------------
