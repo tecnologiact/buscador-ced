@@ -68,7 +68,7 @@ export async function executarMatching(params: {
   if (skillErr || !skill) {
     return {
       status: 'sem_consultora_elegivel',
-      mensagem: `Skill "${skillNome}" não encontrada no catálogo.`,
+      mensagem: `A skill "${skillNome}" não está no catálogo. Nenhuma consultora possui esse tema — independente da data.`,
       elegíveis: [],
       selecionadas: [],
     }
@@ -119,7 +119,7 @@ export async function executarMatching(params: {
   if (elegíveisFiltrados.length === 0) {
     return {
       status: 'sem_consultora_elegivel',
-      mensagem: `Não há consultoras elegíveis para a skill "${skillNome}".`,
+      mensagem: `Nenhuma consultora possui nota suficiente em "${skillNome}" — isso vale para qualquer data. É necessário mapear novas consultoras para essa skill.`,
       elegíveis: [],
       selecionadas: [],
     }
@@ -191,7 +191,7 @@ export async function executarMatching(params: {
       status: erroGraph ? 'erro_graph' : 'sem_disponibilidade',
       mensagem: erroGraph
         ? 'Há consultoras elegíveis, mas não foi possível consultar a agenda (erro no Microsoft Graph).'
-        : 'Há consultoras elegíveis, mas nenhuma está disponível no período informado.',
+        : `Há consultoras com a skill "${skillNome}", mas nenhuma está disponível em ${data}. Tente outra data.`,
       elegíveis: elegíveisCompletos,
       selecionadas: [],
     }
