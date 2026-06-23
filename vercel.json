@@ -4,12 +4,28 @@
     {
       "src": "backend/src/index.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/",
+      "dest": "/nova-demanda.html"
+    },
+    {
+      "src": "/painel",
+      "dest": "/painel.html"
+    },
+    {
+      "src": "/nova-demanda",
+      "dest": "/nova-demanda.html"
     }
   ]
 }
