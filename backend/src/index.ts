@@ -61,11 +61,16 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 })
 
 // ----------------------------------------------------------------
-// Iniciar servidor
+// Exporta o app para o Vercel (serverless)
 // ----------------------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`\n🚀 Buscador C&D rodando em http://localhost:${PORT}`)
-  console.log(`   Health check: http://localhost:${PORT}/health`)
-  console.log(`   Skills:       http://localhost:${PORT}/api/skills`)
-  console.log(`   Demandas:     http://localhost:${PORT}/api/demandas\n`)
-})
+export default app
+
+// Apenas em desenvolvimento local (não roda no Vercel)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Buscador C&D rodando em http://localhost:${PORT}`)
+    console.log(`   Health check: http://localhost:${PORT}/health`)
+    console.log(`   Skills:       http://localhost:${PORT}/api/skills`)
+    console.log(`   Demandas:     http://localhost:${PORT}/api/demandas\n`)
+  })
+}
