@@ -339,6 +339,39 @@
 
     .aviso-acionamento a { color: var(--vermelho); font-weight: 700; }
 
+    .btn-confirm {
+      margin-top: 20px;
+      background: var(--preto);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Roboto', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-confirm:hover { background: #333; transform: translateY(-1px); }
+    .btn-confirm:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+    .msg-acionado {
+      background: #e8f8f0;
+      border-left: 4px solid var(--verde);
+      padding: 16px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #065f46;
+      font-weight: 500;
+      margin-top: 16px;
+    }
+
+    .msg-acionado a { color: var(--vermelho); font-weight: 700; }
+
     /* Campos condicionais */
     .campo-condicional { display: none; }
     .campo-condicional.visivel { display: flex; }
@@ -512,6 +545,9 @@
 <script>
   const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api'
 
+  // Resultado atual (para acionamento manual)
+  let _resultadoAtual = null
+
   // Skills do portfólio — usadas como fallback se o backend não estiver disponível
   const SKILLS_FALLBACK = [
     'Alinhamento de Expectativas',
@@ -610,6 +646,7 @@
         body: JSON.stringify(body),
       })
       const dados = await res.json()
+      _resultadoAtual = dados
       mostrarResultado(dados)
     } catch {
       mostrarErroConexao()
@@ -678,11 +715,14 @@
         `
       })
 
+      const primeira = dados.selecionadas[0]
       html += `
-        <div class="aviso-acionamento">
-          📧 A primeira consultora foi acionada automaticamente por e-mail.
-          Acompanhe as respostas no <a href="painel.html">Painel</a>.
-        </div>
+        <button class="btn-confirm" id="btnAcionar" onclick="acionar()">
+          📧 Enviar convite para ${primeira.nome} →
+        </button>
+        <p style="font-size:12px;color:#aaa;margin-top:8px;text-align:center;">
+          Nenhum e-mail foi enviado ainda. Confirme para acionar a primeira consultora da lista.
+        </p>
       `
     }
 
@@ -699,6 +739,55 @@
         <small>Verifique se o servidor está rodando em http://localhost:3000</small>
       </div>
     `
+  }
+
+  async function acionar() {
+    if (!_resultadoAtual?.demanda_id || !_resultadoAtual?.selecionadas?.length) return
+
+    const btn = document.getElementById('btnAcionar')
+    const primeira = _resultadoAtual.selecionadas[0]
+
+    btn.disabled = true
+    btn.textContent = 'Enviando convite...'
+
+    try {
+      const res = await fetch(`${API}/demandas/${_resultadoAtual.demanda_id}/acionar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_id: primeira.consultora_id }),
+      })
+      const dados = await res.json()
+
+      if (!res.ok) {
+        btn.disabled = false
+        btn.textContent = `📧 Enviar convite para ${primeira.nome} →`
+        const aviso = document.createElement('div')
+        aviso.className = 'msg-status msg-erro'
+        aviso.style.marginTop = '12px'
+        aviso.textContent = `❌ ${dados.erro ?? 'Erro ao acionar consultora'}`
+        btn.parentNode.insertBefore(aviso, btn.nextSibling)
+        return
+      }
+
+      // Sucesso — substitui o botão pelo aviso de confirmação
+      btn.parentNode.innerHTML = `
+        <div class="msg-acionado">
+          ✅ Convite enviado para <strong>${primeira.nome}</strong>!
+          Aguardando resposta por e-mail.<br>
+          <a href="painel.html" style="margin-top:6px;display:inline-block;">
+            Ver acompanhamento no Painel →
+          </a>
+        </div>
+      `
+    } catch {
+      btn.disabled = false
+      btn.textContent = `📧 Enviar convite para ${primeira.nome} →`
+      const aviso = document.createElement('div')
+      aviso.className = 'msg-status msg-erro'
+      aviso.style.marginTop = '12px'
+      aviso.textContent = '❌ Não foi possível conectar ao backend.'
+      btn.parentNode.insertBefore(aviso, btn.nextSibling)
+    }
   }
 
   carregarSkills()

@@ -109,24 +109,7 @@ demandasRouter.post('/', async (req: Request, res: Response) => {
     }))
 
     await supabase.from('sugestoes_consultoras').insert(sugestoes)
-
-    // 6. Acionar automaticamente a primeira consultora
-    await acionarConsultora(demanda.id, matching.selecionadas[0], {
-      cliente:        body.cliente,
-      skill:          body.skill,
-      formato:        body.formato,
-      data:           body.data,
-      horaInicio:     body.horaInicio,
-      horaFim:        body.horaFim,
-      duracaoMinutos: body.duracaoMinutos,
-      modalidade:     body.modalidade,
-      observacoes:    body.observacoes,
-    })
-
-    await supabase
-      .from('demandas')
-      .update({ status: 'aguardando_aceite' })
-      .eq('id', demanda.id)
+    // Aguarda confirmação manual — não aciona automaticamente
   }
 
   return res.status(201).json({
