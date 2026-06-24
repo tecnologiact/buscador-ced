@@ -460,20 +460,15 @@
         <p class="aviso-inline">Mentoring Lab funciona em ciclos. Informe o total de sessões previstas.</p>
       </div>
 
-      <div class="grid-2">
-        <div class="campo">
-          <label>Data *</label>
-          <input type="date" id="data" required>
+      <div class="campo">
+        <label>Datas *</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="date" id="dataInput" style="flex:1">
+          <button type="button" class="btn-secondary" onclick="adicionarData()" style="white-space:nowrap;padding:10px 16px;">+ Adicionar</button>
         </div>
-        <div class="campo">
-          <label>Duração da sessão (minutos) *</label>
-          <input type="number" id="duracaoMinutos" min="30" max="480" step="30"
-                 placeholder="Ex: 120" required>
-        </div>
+        <div id="datasChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:0;"></div>
+        <p class="aviso-inline" style="margin-top:4px;">📅 Busca disponibilidade em cada data selecionada (08h–19h)</p>
       </div>
-      <p class="aviso-inline">
-        📅 O sistema busca disponibilidade ao longo do dia todo (08h–19h) e mostra os horários livres de cada consultora.
-      </p>
 
       <div class="campo">
         <label>Observações</label>
@@ -590,9 +585,22 @@
     'Recognita','Ritual de Passagem',
   ]
 
+  // Duração padrão por formato (minutos)
+  const DURACAO_POR_FORMATO = {
+    'Masterclass interativa':      120,
+    'Skill Lab ou Mini Bootcamp':  180,
+    'Learning Sprint':             300,
+    'Simulation Lab':              360,
+    'Hackathon':                   420,
+    'Mentoring Lab':                60,
+    'Career Milestone':            180,
+    'Assessment Experience':        90,
+  }
+
   // Estado da busca individual
+  let _datasAdicionadas = []    // strings YYYY-MM-DD
   let _resultadoAtual = null
-  let _selecionadas = new Set() // consultora_ids selecionadas
+  let _selecionadas = new Set() // "consultora_id::data"
 
   // Estado do CSV bulk
   let _csvLinhas = []   // linhas parsed do CSV
@@ -635,16 +643,54 @@
     document.getElementById('numSessoes').required = isMentoring
   }
 
+  // ── MULTI-DATA CHIPS ─────────────────────────────────────────────
+  function adicionarData() {
+    const input = document.getElementById('dataInput')
+    const val = input.value
+    if (!val) return
+    if (_datasAdicionadas.includes(val)) { input.value = ''; return }
+    _datasAdicionadas.push(val)
+    input.value = ''
+    renderChips()
+  }
+
+  // Permite Enter no campo de data
+  document.getElementById('dataInput')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); adicionarData() }
+  })
+
+  function removerData(val) {
+    _datasAdicionadas = _datasAdicionadas.filter(d => d !== val)
+    renderChips()
+  }
+
+  function renderChips() {
+    const container = document.getElementById('datasChips')
+    container.innerHTML = _datasAdicionadas.map(d => {
+      const [a, m, dia] = d.split('-')
+      return `<span style="display:inline-flex;align-items:center;gap:6px;background:var(--preto);color:white;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;">
+        ${dia}/${m}/${a}
+        <button type="button" onclick="removerData('${d}')"
+          style="background:none;border:none;color:white;cursor:pointer;font-size:14px;line-height:1;padding:0;margin-left:2px;">×</button>
+      </span>`
+    }).join('')
+  }
+
   // ── SUBMIT BUSCA INDIVIDUAL ───────────────────────────────────────
   document.getElementById('formDemanda').addEventListener('submit', async (e) => {
     e.preventDefault()
+
+    if (_datasAdicionadas.length === 0) {
+      alert('Adicione ao menos uma data antes de consultar.')
+      return
+    }
+
     const btn = document.getElementById('btnBuscar')
     const spinner = document.getElementById('spinner')
     const resultado = document.getElementById('resultado')
 
-    // Reset seleção anterior
     _selecionadas.clear()
-    _resultadoAtual = null
+    _resultadoAtual = []
     resultado.style.display = 'none'
 
     btn.disabled = true
@@ -653,12 +699,13 @@
 
     const formato = document.getElementById('formato').value
     const numSessoesVal = document.getElementById('numSessoes').value
-    const body = {
+    const duracaoMinutos = DURACAO_POR_FORMATO[formato] ?? 60
+
+    const bodyBase = {
       cliente:        document.getElementById('cliente').value,
       skill:          document.getElementById('skill').value,
       formato,
-      data:           document.getElementById('data').value,
-      duracaoMinutos: parseInt(document.getElementById('duracaoMinutos').value),
+      duracaoMinutos,
       modalidade:     document.getElementById('modalidade').value,
       observacoes:    document.getElementById('observacoes').value || undefined,
       ...(formato === 'Mentoring Lab' && numSessoesVal
@@ -666,38 +713,35 @@
     }
 
     try {
-      const res = await fetch(`${API}/demandas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const dados = await res.json()
-      _resultadoAtual = dados
-      mostrarResultado(dados)
+      // Busca dry_run para cada data selecionada
+      for (const data of _datasAdicionadas) {
+        spinner.querySelector('p').textContent =
+          `Consultando ${data.split('-').reverse().join('/')}...`
+        const res = await fetch(`${API}/demandas?dry_run=true`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...bodyBase, data }),
+        })
+        const dados = await res.json()
+        _resultadoAtual.push({ data, dados, body: { ...bodyBase, data } })
+      }
+      mostrarResultadoMulti()
     } catch {
       mostrarErroConexao()
     } finally {
       btn.disabled = false
       btn.textContent = 'Consultar Disponibilidade'
+      spinner.querySelector('p').textContent = 'Consultando agenda e buscando consultoras disponíveis...'
       spinner.classList.remove('ativo')
     }
   })
 
-  function mostrarResultado(dados) {
+  // ── RESULTADO MULTI-DATA ──────────────────────────────────────────
+  function mostrarResultadoMulti() {
     const div = document.getElementById('conteudoResultado')
     const resultado = document.getElementById('resultado')
     resultado.style.display = 'block'
     document.getElementById('btnSalvarPainel').style.display = 'none'
-
-    if (dados.erro) {
-      div.innerHTML = `
-        <div class="msg-status msg-erro">
-          ❌ ${dados.erro}
-          ${dados.detalhes ? `<br><small style="font-family:monospace">${JSON.stringify(dados.detalhes)}</small>` : ''}
-        </div>`
-      resultado.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      return
-    }
 
     const msgMap = {
       consultoras_encontradas: { cls: 'msg-ok',    icone: '✅' },
@@ -706,54 +750,72 @@
       sem_disponibilidade:     { cls: 'msg-aviso', icone: '⚠️' },
       erro_graph:              { cls: 'msg-aviso', icone: '⚠️' },
     }
-    const m = msgMap[dados.status] ?? { cls: 'msg-aviso', icone: 'ℹ️' }
-    const mensagem = dados.mensagem ?? dados.status ?? 'Resposta desconhecida do servidor'
 
-    let html = `<div class="msg-status ${m.cls}">${m.icone} ${mensagem}</div>`
-    if (dados.demanda_id) html += `<p class="demanda-id">ID: ${dados.demanda_id}</p>`
+    let html = ''
 
-    if (dados.selecionadas?.length) {
-      html += `<p class="secao-titulo" style="margin-top:24px;">
-        Consultoras disponíveis — selecione as que deseja salvar no Painel
-      </p>`
+    for (const item of _resultadoAtual) {
+      const { data, dados } = item
+      const [a, m, d] = data.split('-')
+      const dataLabel = `${d}/${m}/${a}`
 
-      dados.selecionadas.forEach((c, i) => {
-        const slots = c.slotsLivres?.map(s => `${s.inicio}–${s.fim}`).join(', ') || 'disponível'
-        html += `
-          <div class="consultora-card" id="card-${c.consultora_id}"
-               onclick="toggleCard('${c.consultora_id}')">
-            <div class="card-left">
-              <input type="checkbox" class="consultora-checkbox"
-                     id="chk-${c.consultora_id}"
-                     onclick="event.stopPropagation(); toggleCard('${c.consultora_id}')">
-              <div class="consultora-ordem">${i + 1}</div>
-              <div class="consultora-info">
-                <h3>${c.nome}</h3>
-                <p>${c.email}</p>
-                <p class="consultora-slots">🕐 ${slots}</p>
-              </div>
-            </div>
-            <div class="nota-badge">
-              <div class="nota-num nota-${c.nota}">${c.nota}</div>
-              <div class="nota-label">${c.nivel}</div>
-            </div>
-          </div>`
-      })
+      html += `<div style="margin-bottom:28px;">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+                  color:var(--cinza-texto);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+          <span style="background:var(--preto);color:white;padding:2px 10px;border-radius:20px;font-size:11px;">
+            📅 ${dataLabel}
+          </span>
+        </p>`
+
+      if (dados.erro) {
+        html += `<div class="msg-status msg-erro">❌ ${dados.erro}</div>`
+      } else {
+        const info = msgMap[dados.status] ?? { cls: 'msg-aviso', icone: 'ℹ️' }
+        const mensagem = dados.mensagem ?? dados.status ?? 'Resposta desconhecida'
+        html += `<div class="msg-status ${info.cls}">${info.icone} ${mensagem}</div>`
+
+        if (dados.selecionadas?.length) {
+          dados.selecionadas.forEach((c, i) => {
+            const key = `${c.consultora_id}::${data}`
+            const safeKey = key.replace(/:/g, '_').replace(/-/g, '_')
+            const slots = c.slotsLivres?.map(s => `${s.inicio}–${s.fim}`).join(', ') || 'disponível'
+            html += `
+              <div class="consultora-card" id="card-${safeKey}"
+                   onclick="toggleCard('${key}','${safeKey}')">
+                <div class="card-left">
+                  <input type="checkbox" class="consultora-checkbox"
+                         id="chk-${safeKey}"
+                         onclick="event.stopPropagation(); toggleCard('${key}','${safeKey}')">
+                  <div class="consultora-ordem">${i + 1}</div>
+                  <div class="consultora-info">
+                    <h3>${c.nome}</h3>
+                    <p>${c.email}</p>
+                    <p class="consultora-slots">🕐 ${slots}</p>
+                  </div>
+                </div>
+                <div class="nota-badge">
+                  <div class="nota-num nota-${c.nota}">${c.nota}</div>
+                  <div class="nota-label">${c.nivel}</div>
+                </div>
+              </div>`
+          })
+        }
+      }
+      html += `</div>`
     }
 
     div.innerHTML = html
     resultado.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  function toggleCard(consultora_id) {
-    const chk = document.getElementById(`chk-${consultora_id}`)
-    const card = document.getElementById(`card-${consultora_id}`)
+  function toggleCard(key, safeKey) {
+    const chk = document.getElementById(`chk-${safeKey}`)
+    const card = document.getElementById(`card-${safeKey}`)
     chk.checked = !chk.checked
     if (chk.checked) {
-      _selecionadas.add(consultora_id)
+      _selecionadas.add(key)
       card.classList.add('selecionada')
     } else {
-      _selecionadas.delete(consultora_id)
+      _selecionadas.delete(key)
       card.classList.remove('selecionada')
     }
     atualizarBotaoSalvar()
@@ -763,40 +825,57 @@
     const n = _selecionadas.size
     const btn = document.getElementById('btnSalvarPainel')
     btn.style.display = n > 0 ? 'block' : 'none'
-    btn.textContent = `Salvar ${n} consultora${n !== 1 ? 's' : ''} no Painel →`
+    btn.textContent = `Salvar ${n} seleção${n !== 1 ? 'ões' : ''} no Painel →`
   }
 
   async function salvarNoPainel() {
-    if (!_resultadoAtual?.demanda_id || _selecionadas.size === 0) return
+    if (_selecionadas.size === 0) return
     const btn = document.getElementById('btnSalvarPainel')
     btn.disabled = true
     btn.textContent = 'Salvando...'
 
-    try {
-      const res = await fetch(`${API}/demandas/${_resultadoAtual.demanda_id}/selecionar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ consultora_ids: [..._selecionadas] }),
-      })
-      if (res.ok) {
-        const div = document.getElementById('conteudoResultado')
-        div.insertAdjacentHTML('beforeend', `
-          <div class="msg-salvo">
-            ✅ Salvo no Painel! As consultoras selecionadas estão aguardando acionamento.<br>
-            <a href="painel.html" style="display:inline-block;margin-top:6px;">Ver no Painel →</a>
-          </div>
-        `)
-        btn.style.display = 'none'
-      } else {
-        const d = await res.json()
-        btn.disabled = false
-        atualizarBotaoSalvar()
-        alert(d.erro ?? 'Erro ao salvar.')
-      }
-    } catch {
-      btn.disabled = false
+    let salvos = 0; let erros = 0
+
+    for (const key of _selecionadas) {
+      // key = "consultora_id::YYYY-MM-DD"
+      const [consultora_id, data] = key.split('::')
+      const item = _resultadoAtual.find(r => r.data === data)
+      if (!item) { erros++; continue }
+
+      try {
+        // 1. Criar a demanda real
+        const res1 = await fetch(`${API}/demandas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item.body),
+        })
+        const d1 = await res1.json()
+        if (!d1.demanda_id) { erros++; continue }
+
+        // 2. Marcar consultora como acionada
+        await fetch(`${API}/demandas/${d1.demanda_id}/selecionar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ consultora_ids: [consultora_id] }),
+        })
+        salvos++
+      } catch { erros++ }
+    }
+
+    btn.disabled = false
+    if (salvos > 0) {
+      const div = document.getElementById('conteudoResultado')
+      div.insertAdjacentHTML('beforeend', `
+        <div class="msg-salvo">
+          ✅ ${salvos} demanda${salvos !== 1 ? 's' : ''} salva${salvos !== 1 ? 's' : ''} no Painel!
+          ${erros > 0 ? `(${erros} com erro)` : ''}
+          <a href="painel.html" style="display:inline-block;margin-top:6px;">Ver no Painel →</a>
+        </div>
+      `)
+      btn.style.display = 'none'
+    } else {
       atualizarBotaoSalvar()
-      alert('Não foi possível conectar ao backend.')
+      alert('Ocorreu um erro ao salvar. Tente novamente.')
     }
   }
 
