@@ -1050,7 +1050,7 @@
         skill:          linha.skill || '',
         formato,
         data:           normalizarData(dataRaw),
-        duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? parseInt(linha.duracao_minutos) || 60,
+        duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? (parseInt(linha.duracao_minutos) || 60),
         modalidade:     linha.modalidade || 'online',
         observacoes:    linha.observacoes || undefined,
       }
@@ -1188,4 +1188,4 @@
   carregarSkills()
 </script>
 </body>
-</html>
+</html
