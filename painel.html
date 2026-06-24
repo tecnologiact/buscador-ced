@@ -16,350 +16,201 @@
       --verde: #00a85c;
       --azul: #004fce;
       --roxo: #2e22b8;
-      --rosa: #e35fcf;
       --laranja: #ff6b1a;
       --cinza-claro: #f5f5f5;
       --cinza-borda: #e0e0e0;
       --cinza-texto: #666;
     }
 
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background: var(--cinza-claro);
-      color: var(--preto);
-      min-height: 100vh;
-    }
+    body { font-family: 'Roboto', Arial, sans-serif; background: var(--cinza-claro); color: var(--preto); min-height: 100vh; }
 
-    .geo-bar {
-      height: 4px;
-      background: linear-gradient(to right,
-        var(--vermelho) 33%,
-        var(--verde-lima) 33% 66%,
-        var(--azul) 66%);
-    }
+    .geo-bar { height: 4px; background: linear-gradient(to right, var(--vermelho) 33%, var(--verde-lima) 33% 66%, var(--azul) 66%); }
 
-    header {
-      background: var(--preto);
-      padding: 0 40px;
-      display: flex;
-      align-items: stretch;
-      height: 64px;
-    }
-
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      flex: 1;
-    }
-
-    .logo-c {
-      width: 36px; height: 36px;
-      background: var(--vermelho);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; font-weight: 900; color: white; flex-shrink: 0;
-    }
-
+    header { background: var(--preto); padding: 0 40px; display: flex; align-items: stretch; height: 64px; }
+    .header-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex: 1; }
+    .logo-c { width: 36px; height: 36px; background: var(--vermelho); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: white; flex-shrink: 0; }
     .logo-texto { color: white; font-size: 15px; font-weight: 700; line-height: 1.2; }
-    .logo-sub   { color: #888;  font-size: 11px; font-weight: 400; }
-
+    .logo-sub { color: #888; font-size: 11px; font-weight: 400; }
     .header-right { display: flex; align-items: center; gap: 12px; }
+    .badge-live { display: flex; align-items: center; gap: 6px; background: rgba(0,168,92,0.15); border: 1px solid var(--verde); border-radius: 12px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: var(--verde); text-transform: uppercase; letter-spacing: 0.5px; }
+    .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+    .btn-nova { background: var(--vermelho); color: white; text-decoration: none; padding: 8px 18px; border-radius: 4px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.15s; }
+    .btn-nova:hover { background: #cc1a22; }
 
-    .badge-live {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(0,168,92,0.15); border: 1px solid var(--verde);
-      border-radius: 12px; padding: 4px 10px;
-      font-size: 11px; font-weight: 700; color: var(--verde);
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-
-    .dot-live {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--verde);
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.5; transform: scale(1.3); }
-    }
-
-    .btn-nova-demanda {
-      background: var(--vermelho); color: white; text-decoration: none;
-      padding: 8px 18px; border-radius: 4px; font-size: 13px;
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-      transition: background 0.15s;
-    }
-    .btn-nova-demanda:hover { background: #cc1a22; }
-
-    nav {
-      background: var(--vermelho); padding: 0 40px; display: flex;
-    }
-
-    nav a {
-      color: rgba(255,255,255,0.75); text-decoration: none;
-      padding: 0 20px; height: 44px; display: flex; align-items: center;
-      font-size: 14px; font-weight: 500;
-      border-bottom: 3px solid transparent; transition: all 0.15s;
-    }
+    nav { background: var(--vermelho); padding: 0 40px; display: flex; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; padding: 0 20px; height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.15s; }
     nav a:hover { color: white; }
     nav a.ativo { color: white; font-weight: 700; border-bottom-color: var(--verde-lima); }
 
     .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
 
-    .topo {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
-    }
-
+    .topo { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
     .topo h1 { font-size: 26px; font-weight: 900; line-height: 1.1; }
     .topo h1 span { color: var(--vermelho); }
-
     .ultima-atualizacao { font-size: 12px; color: #aaa; white-space: nowrap; }
 
     /* MÉTRICAS */
-    .metricas {
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      gap: 12px; margin-bottom: 24px;
-    }
-
-    .metrica-card {
-      background: var(--branco); border-radius: 4px; padding: 20px 18px;
-      border-top: 4px solid var(--cinza-borda);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.05); cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
+    .metricas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+    .metrica-card { background: var(--branco); border-radius: 4px; padding: 20px 18px; border-top: 4px solid var(--cinza-borda); box-shadow: 0 1px 6px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
     .metrica-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-
     .mc-total      { border-top-color: var(--preto); }
     .mc-aguardando { border-top-color: var(--laranja); }
     .mc-aceita     { border-top-color: var(--verde); }
-    .mc-sem-eleg   { border-top-color: var(--vermelho); }
-    .mc-sem-disp   { border-top-color: var(--azul); }
-
+    .mc-recusada   { border-top-color: var(--vermelho); }
+    .mc-concluida  { border-top-color: var(--azul); }
     .metrica-num { font-size: 36px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
-
     .mc-total      .metrica-num { color: var(--preto); }
     .mc-aguardando .metrica-num { color: var(--laranja); }
     .mc-aceita     .metrica-num { color: var(--verde); }
-    .mc-sem-eleg   .metrica-num { color: var(--vermelho); }
-    .mc-sem-disp   .metrica-num { color: var(--azul); }
+    .mc-recusada   .metrica-num { color: var(--vermelho); }
+    .mc-concluida  .metrica-num { color: var(--azul); }
+    .metrica-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--cinza-texto); }
 
-    .metrica-label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.7px; color: var(--cinza-texto);
-    }
+    /* TABS */
+    .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--cinza-borda); }
+    .tab-btn { background: none; border: none; padding: 12px 24px; font-size: 14px; font-weight: 700; font-family: 'Roboto', Arial, sans-serif; color: var(--cinza-texto); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tab-btn:hover { color: var(--preto); }
+    .tab-btn.ativo { color: var(--vermelho); border-bottom-color: var(--vermelho); }
+    .tab-conteudo { display: none; padding-top: 20px; }
+    .tab-conteudo.ativo { display: block; }
 
     /* FILTROS */
-    .filtros-bar {
-      background: var(--branco); border-radius: 4px; padding: 16px 20px;
-      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
-      flex-wrap: wrap; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-    }
-
-    .filtros-bar label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.7px; color: var(--cinza-texto);
-    }
-
-    .filtros-bar select,
-    .filtros-bar input {
-      border: 1.5px solid var(--cinza-borda); border-radius: 4px;
-      padding: 7px 12px; font-size: 13px;
-      font-family: 'Roboto', Arial, sans-serif; color: var(--preto);
-      background: var(--branco);
-    }
-    .filtros-bar select:focus,
-    .filtros-bar input:focus { outline: none; border-color: var(--vermelho); }
-
-    .btn-limpar {
-      background: none; border: 1.5px solid var(--cinza-borda); border-radius: 4px;
-      padding: 7px 14px; font-size: 12px; font-weight: 700; color: var(--cinza-texto);
-      cursor: pointer; font-family: 'Roboto', Arial, sans-serif;
-      text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s;
-    }
+    .filtros-bar { background: var(--branco); border-radius: 4px; padding: 16px 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+    .filtros-bar label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--cinza-texto); }
+    .filtros-bar select, .filtros-bar input { border: 1.5px solid var(--cinza-borda); border-radius: 4px; padding: 7px 12px; font-size: 13px; font-family: 'Roboto', Arial, sans-serif; color: var(--preto); background: var(--branco); }
+    .filtros-bar select:focus, .filtros-bar input:focus { outline: none; border-color: var(--vermelho); }
+    .btn-limpar { background: none; border: 1.5px solid var(--cinza-borda); border-radius: 4px; padding: 7px 14px; font-size: 12px; font-weight: 700; color: var(--cinza-texto); cursor: pointer; font-family: 'Roboto', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
     .btn-limpar:hover { border-color: var(--vermelho); color: var(--vermelho); }
-
     .filtros-espacador { flex: 1; }
-
-    .btn-refresh {
-      background: var(--preto); color: white; border: none; border-radius: 4px;
-      padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
-      font-family: 'Roboto', Arial, sans-serif; text-transform: uppercase;
-      letter-spacing: 0.5px; transition: background 0.15s;
-    }
+    .btn-refresh { background: var(--preto); color: white; border: none; border-radius: 4px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Roboto', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.15s; }
     .btn-refresh:hover { background: #333; }
 
     /* TABELA */
-    .tabela-container {
-      background: var(--branco); border-radius: 4px; overflow: hidden;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-    }
-
+    .tabela-container { background: var(--branco); border-radius: 4px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
     table { width: 100%; border-collapse: collapse; }
     thead { background: var(--preto); }
-
-    thead th {
-      color: white; text-align: left; padding: 12px 16px;
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.8px; white-space: nowrap;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--cinza-borda); cursor: pointer;
-      transition: background 0.12s;
-    }
+    thead th { color: white; text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--cinza-borda); cursor: pointer; transition: background 0.12s; }
     tbody tr:hover { background: #fef5f5; }
     tbody tr:last-child { border-bottom: none; }
-
     td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
     .td-cliente { font-weight: 700; }
-    .td-skill   { color: var(--cinza-texto); }
-    .td-data    { font-size: 12px; color: var(--cinza-texto); white-space: nowrap; }
-    .td-arrow   { color: #ccc; font-size: 16px; text-align: right; }
+    .td-skill { color: var(--cinza-texto); }
+    .td-data { font-size: 12px; color: var(--cinza-texto); white-space: nowrap; }
+    .td-arrow { color: #ccc; font-size: 16px; text-align: right; }
 
-    /* STATUS BADGES */
-    .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.4px; white-space: nowrap;
-    }
-    .badge-pendente       { background: #fff3e0; color: #e65100; }
-    .badge-aguardando     { background: #fff8e0; color: #b77a00; }
-    .badge-aceita         { background: #e8f8f0; color: #065f46; }
-    .badge-recusada       { background: #fef0f0; color: #991b1b; }
-    .badge-sem_elegivel   { background: #fce8e8; color: var(--vermelho); }
-    .badge-sem_disponivel { background: #e8f0fe; color: var(--azul); }
-    .badge-aceita_obs     { background: #f3e8ff; color: var(--roxo); }
-    .badge-cancelada      { background: #f0f0f0; color: #666; }
+    /* BADGES */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+    .badge-aguardando  { background: #fff8e0; color: #b77a00; }
+    .badge-aceita      { background: #e8f8f0; color: #065f46; }
+    .badge-aceita_obs  { background: #f3e8ff; color: var(--roxo); }
+    .badge-recusada    { background: #fef0f0; color: #991b1b; }
+    .badge-sem_aceite  { background: #fce8e8; color: var(--vermelho); }
+    .badge-concluida   { background: #e8f0fe; color: var(--azul); }
+    .badge-cancelada   { background: #f0f0f0; color: #666; }
 
-    /* ESTADO VAZIO */
+    /* ESTADO VAZIO / SPINNER */
     .estado-vazio { padding: 60px 20px; text-align: center; }
     .estado-vazio .icone { font-size: 48px; margin-bottom: 12px; }
     .estado-vazio p { font-size: 14px; color: var(--cinza-texto); }
     .estado-vazio strong { color: var(--preto); font-size: 16px; display: block; margin-bottom: 6px; }
-
-    /* SPINNER */
     .spinner { padding: 48px 20px; text-align: center; }
     .dot-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
-    .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      animation: bounce 1.2s ease-in-out infinite;
-    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; animation: bounce 1.2s ease-in-out infinite; }
     .dot:nth-child(1) { background: var(--vermelho); animation-delay: 0s; }
-    .dot:nth-child(2) { background: var(--azul);     animation-delay: 0.2s; }
-    .dot:nth-child(3) { background: var(--verde-lima);animation-delay: 0.4s; }
-
-    @keyframes bounce {
-      0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
-      40%          { transform: scale(1);   opacity: 1; }
-    }
+    .dot:nth-child(2) { background: var(--azul); animation-delay: 0.2s; }
+    .dot:nth-child(3) { background: var(--verde-lima); animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
     .spinner p { font-size: 13px; color: var(--cinza-texto); }
 
     /* PAGINAÇÃO */
-    .paginacao {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px; border-top: 1px solid var(--cinza-borda);
-      background: var(--branco); font-size: 12px; color: var(--cinza-texto);
-    }
+    .paginacao { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid var(--cinza-borda); background: var(--branco); font-size: 12px; color: var(--cinza-texto); }
     .paginacao-btns { display: flex; gap: 4px; }
-    .btn-pag {
-      border: 1px solid var(--cinza-borda); background: white; border-radius: 4px;
-      padding: 5px 10px; font-size: 12px; cursor: pointer;
-      font-family: 'Roboto', Arial, sans-serif; transition: all 0.15s;
-    }
+    .btn-pag { border: 1px solid var(--cinza-borda); background: white; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: 'Roboto', Arial, sans-serif; transition: all 0.15s; }
     .btn-pag:hover:not(:disabled) { border-color: var(--vermelho); color: var(--vermelho); }
     .btn-pag.ativo { background: var(--vermelho); color: white; border-color: var(--vermelho); }
     .btn-pag:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* CALENDÁRIO */
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .cal-titulo { font-size: 20px; font-weight: 900; color: var(--preto); }
+    .cal-nav { display: flex; gap: 8px; }
+    .btn-cal-nav { background: var(--branco); border: 1.5px solid var(--cinza-borda); border-radius: 4px; padding: 6px 14px; font-size: 18px; cursor: pointer; transition: all 0.15s; }
+    .btn-cal-nav:hover { border-color: var(--vermelho); color: var(--vermelho); }
+    .cal-grid { background: var(--branco); border-radius: 4px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); overflow: hidden; }
+    .cal-dias-semana { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--preto); }
+    .cal-dia-semana { color: white; text-align: center; padding: 10px 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cal-semanas { display: grid; }
+    .cal-semana { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid var(--cinza-borda); min-height: 100px; }
+    .cal-semana:last-child { border-bottom: none; }
+    .cal-celula { border-right: 1px solid var(--cinza-borda); padding: 8px; min-height: 100px; }
+    .cal-celula:last-child { border-right: none; }
+    .cal-celula.outro-mes { background: #fafafa; }
+    .cal-celula.hoje { background: #fff8f8; }
+    .cal-num { font-size: 13px; font-weight: 700; color: var(--cinza-texto); margin-bottom: 6px; }
+    .cal-celula.hoje .cal-num { color: var(--vermelho); }
+    .cal-chip { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; margin-bottom: 3px; cursor: pointer; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; display: block; transition: opacity 0.15s; }
+    .cal-chip:hover { opacity: 0.75; }
+    .chip-aguardando { background: #fff8e0; color: #b77a00; }
+    .chip-aceita     { background: #e8f8f0; color: #065f46; }
+    .chip-recusada   { background: #fef0f0; color: #991b1b; }
+    .chip-outros     { background: #f0f0f0; color: #666; }
+
     /* MODAL */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(29,29,27,0.6); z-index: 1000;
-      align-items: flex-start; justify-content: center;
-      padding: 40px 20px; overflow-y: auto;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(29,29,27,0.6); z-index: 1000; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
     .modal-overlay.aberto { display: flex; }
-
-    .modal {
-      background: var(--branco); border-radius: 4px;
-      width: 100%; max-width: 720px; overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-      animation: slideIn 0.2s ease-out;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-header {
-      background: var(--preto); padding: 20px 24px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    .modal { background: var(--branco); border-radius: 4px; width: 100%; max-width: 760px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: slideIn 0.2s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { background: var(--preto); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
     .modal-header h2 { color: white; font-size: 16px; font-weight: 700; }
     .modal-id { font-size: 11px; color: #666; font-family: monospace; margin-top: 2px; }
-    .modal-fechar {
-      background: none; border: none; color: #888; font-size: 22px;
-      cursor: pointer; padding: 4px; line-height: 1; transition: color 0.15s;
-    }
+    .modal-fechar { background: none; border: none; color: #888; font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; transition: color 0.15s; }
     .modal-fechar:hover { color: white; }
     .modal-acento { height: 4px; background: var(--vermelho); }
     .modal-body { padding: 24px; }
-
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
-
-    .modal-campo label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.8px; color: #aaa; display: block; margin-bottom: 2px;
-    }
+    .modal-campo label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #aaa; display: block; margin-bottom: 2px; }
     .modal-campo p { font-size: 14px; font-weight: 500; color: var(--preto); }
-
     .modal-secao { margin-bottom: 20px; }
-    .modal-secao-titulo {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--cinza-texto); margin-bottom: 12px;
-      padding-bottom: 8px; border-bottom: 1px solid var(--cinza-borda);
-    }
+    .modal-secao-titulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--cinza-texto); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--cinza-borda); }
 
-    .consultora-row {
-      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-      border-radius: 4px; background: var(--cinza-claro); margin-bottom: 8px;
-    }
+    /* CONSULTORA ROW NO MODAL */
+    .cons-row { background: var(--cinza-claro); border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
+    .cons-row-top { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
     .cons-ordem { font-size: 20px; font-weight: 900; color: #ccc; min-width: 24px; }
     .cons-info { flex: 1; }
     .cons-nome { font-size: 14px; font-weight: 700; }
     .cons-email { font-size: 11px; color: var(--cinza-texto); margin-top: 1px; }
-
-    .cons-nota {
-      width: 40px; height: 40px; border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 900; color: white;
-    }
+    .cons-slots { font-size: 11px; color: var(--azul); margin-top: 2px; }
+    .cons-nota { width: 40px; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: white; flex-shrink: 0; }
     .cons-nota-3 { background: var(--verde); }
     .cons-nota-2 { background: var(--azul); }
 
-    .cons-resposta {
-      font-size: 11px; font-weight: 700; padding: 3px 8px;
-      border-radius: 12px; min-width: 80px; text-align: center;
-    }
+    /* AÇÕES DA CONSULTORA */
+    .cons-acoes { padding: 10px 14px; border-top: 1px solid var(--cinza-borda); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn-acao { border: none; border-radius: 4px; padding: 7px 14px; font-size: 12px; font-weight: 700; font-family: 'Roboto', Arial, sans-serif; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
+    .btn-acao:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-enviar  { background: var(--preto); color: white; }
+    .btn-enviar:hover:not(:disabled) { background: #333; }
+    .btn-aceitar { background: var(--verde); color: white; }
+    .btn-aceitar:hover:not(:disabled) { background: #008a4a; }
+    .btn-recusar { background: var(--vermelho); color: white; }
+    .btn-recusar:hover:not(:disabled) { background: #cc1a22; }
+    .btn-obs     { background: var(--roxo); color: white; }
+    .btn-obs:hover:not(:disabled) { background: #241ab3; }
+    .cons-resposta-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 
+    /* HISTÓRICO */
     .historico-item { display: flex; gap: 12px; margin-bottom: 10px; }
     .hist-linha { display: flex; flex-direction: column; align-items: center; }
-    .hist-dot   { width: 10px; height: 10px; border-radius: 50%; background: var(--vermelho); flex-shrink: 0; margin-top: 3px; }
-    .hist-fio   { flex: 1; width: 2px; background: var(--cinza-borda); min-height: 24px; }
+    .hist-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--vermelho); flex-shrink: 0; margin-top: 3px; }
+    .hist-fio { flex: 1; width: 2px; background: var(--cinza-borda); min-height: 24px; }
     .hist-conteudo { flex: 1; padding-bottom: 6px; }
-    .hist-acao  { font-size: 13px; font-weight: 500; }
-    .hist-ts    { font-size: 11px; color: #aaa; margin-top: 2px; }
-    .hist-obs   {
-      font-size: 12px; color: var(--cinza-texto); background: var(--cinza-claro);
-      padding: 8px 10px; border-radius: 4px; margin-top: 6px; font-style: italic;
-    }
+    .hist-acao { font-size: 13px; font-weight: 500; }
+    .hist-ts { font-size: 11px; color: #aaa; margin-top: 2px; }
 
-    footer {
-      text-align: center; padding: 24px; font-size: 11px; color: #bbb;
-    }
+    footer { text-align: center; padding: 24px; font-size: 11px; color: #bbb; }
     footer strong { color: var(--vermelho); }
 
     @media (max-width: 900px) { .metricas { grid-template-columns: repeat(3, 1fr); } }
@@ -368,6 +219,8 @@
       header { padding: 0 16px; } nav { padding: 0 16px; }
       .container { padding: 20px 14px; }
       .modal-grid { grid-template-columns: 1fr; }
+      .cal-semana { min-height: 70px; }
+      .cal-celula { min-height: 70px; padding: 4px; }
     }
   </style>
 </head>
@@ -384,16 +237,13 @@
     </div>
   </a>
   <div class="header-right">
-    <div class="badge-live">
-      <div class="dot-live"></div>
-      Ao vivo
-    </div>
-    <a href="nova-demanda.html" class="btn-nova-demanda">+ Nova Demanda</a>
+    <div class="badge-live"><div class="dot-live"></div>Ao vivo</div>
+    <a href="nova-demanda.html" class="btn-nova">+ Nova Busca</a>
   </div>
 </header>
 
 <nav>
-  <a href="nova-demanda.html">Nova Demanda</a>
+  <a href="nova-demanda.html">Busca</a>
   <a href="painel.html" class="ativo">Painel</a>
 </nav>
 
@@ -408,9 +258,9 @@
   <div class="metricas">
     <div class="metrica-card mc-total" onclick="filtrarStatus('')">
       <div class="metrica-num" id="m-total">–</div>
-      <div class="metrica-label">Total</div>
+      <div class="metrica-label">No Painel</div>
     </div>
-    <div class="metrica-card mc-aguardando" onclick="filtrarStatus('aguardando_resposta')">
+    <div class="metrica-card mc-aguardando" onclick="filtrarStatus('aguardando_aceite')">
       <div class="metrica-num" id="m-aguardando">–</div>
       <div class="metrica-label">Aguardando</div>
     </div>
@@ -418,52 +268,80 @@
       <div class="metrica-num" id="m-aceita">–</div>
       <div class="metrica-label">Aceitas</div>
     </div>
-    <div class="metrica-card mc-sem-eleg" onclick="filtrarStatus('sem_consultora_elegivel')">
-      <div class="metrica-num" id="m-sem-eleg">–</div>
-      <div class="metrica-label">Sem elegível</div>
+    <div class="metrica-card mc-recusada" onclick="filtrarStatus('sem_aceite')">
+      <div class="metrica-num" id="m-recusada">–</div>
+      <div class="metrica-label">Sem aceite</div>
     </div>
-    <div class="metrica-card mc-sem-disp" onclick="filtrarStatus('sem_disponibilidade')">
-      <div class="metrica-num" id="m-sem-disp">–</div>
-      <div class="metrica-label">Sem disponib.</div>
+    <div class="metrica-card mc-concluida" onclick="filtrarStatus('concluida')">
+      <div class="metrica-num" id="m-concluida">–</div>
+      <div class="metrica-label">Concluídas</div>
     </div>
   </div>
 
-  <!-- FILTROS -->
-  <div class="filtros-bar">
-    <label>Status</label>
-    <select id="filtroStatus" onchange="aplicarFiltros()">
-      <option value="">Todos</option>
-      <option value="pendente">Pendente</option>
-      <option value="aguardando_resposta">Aguardando resposta</option>
-      <option value="aceita">Aceita</option>
-      <option value="aceita_com_observacao">Aceita c/ observação</option>
-      <option value="recusada">Recusada</option>
-      <option value="sem_consultora_elegivel">Sem consultora elegível</option>
-      <option value="sem_disponibilidade">Sem disponibilidade</option>
-      <option value="cancelada">Cancelada</option>
-    </select>
-    <label>De</label>
-    <input type="date" id="filtroDataInicio" onchange="aplicarFiltros()">
-    <label>Até</label>
-    <input type="date" id="filtroDataFim" onchange="aplicarFiltros()">
-    <button class="btn-limpar" onclick="limparFiltros()">Limpar</button>
-    <div class="filtros-espacador"></div>
-    <button class="btn-refresh" onclick="carregar()">↺ Atualizar</button>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn ativo" onclick="mudarTab('lista')">📋 Lista</button>
+    <button class="tab-btn" onclick="mudarTab('calendario')">📅 Calendário</button>
   </div>
 
-  <!-- TABELA -->
-  <div class="tabela-container">
-    <div id="conteudoTabela">
-      <div class="spinner">
-        <div class="dot-row">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  <!-- TAB: LISTA -->
+  <div class="tab-conteudo ativo" id="tab-lista">
+    <div class="filtros-bar">
+      <label>Status</label>
+      <select id="filtroStatus" onchange="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option value="aguardando_aceite">Aguardando resposta</option>
+        <option value="aceita">Aceita</option>
+        <option value="aceita_com_observacao">Aceita c/ observação</option>
+        <option value="recusada">Recusada</option>
+        <option value="sem_aceite">Sem aceite</option>
+        <option value="concluida">Concluída</option>
+        <option value="cancelada">Cancelada</option>
+      </select>
+      <label>De</label>
+      <input type="date" id="filtroDataInicio" onchange="aplicarFiltros()">
+      <label>Até</label>
+      <input type="date" id="filtroDataFim" onchange="aplicarFiltros()">
+      <button class="btn-limpar" onclick="limparFiltros()">Limpar</button>
+      <div class="filtros-espacador"></div>
+      <button class="btn-refresh" onclick="carregar()">↺ Atualizar</button>
+    </div>
+
+    <div class="tabela-container">
+      <div id="conteudoTabela">
+        <div class="spinner">
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <p>Carregando demandas...</p>
         </div>
-        <p>Carregando demandas...</p>
+      </div>
+      <div class="paginacao" id="paginacao" style="display:none">
+        <span id="pag-info">–</span>
+        <div class="paginacao-btns" id="pag-btns"></div>
       </div>
     </div>
-    <div class="paginacao" id="paginacao" style="display:none">
-      <span id="pag-info">–</span>
-      <div class="paginacao-btns" id="pag-btns"></div>
+  </div>
+
+  <!-- TAB: CALENDÁRIO -->
+  <div class="tab-conteudo" id="tab-calendario">
+    <div class="cal-header">
+      <div class="cal-titulo" id="calTitulo">–</div>
+      <div class="cal-nav">
+        <button class="btn-cal-nav" onclick="mudarMes(-1)">‹</button>
+        <button class="btn-cal-nav" onclick="mudarMes(0)">Hoje</button>
+        <button class="btn-cal-nav" onclick="mudarMes(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-dias-semana">
+        <div class="cal-dia-semana">Dom</div>
+        <div class="cal-dia-semana">Seg</div>
+        <div class="cal-dia-semana">Ter</div>
+        <div class="cal-dia-semana">Qua</div>
+        <div class="cal-dia-semana">Qui</div>
+        <div class="cal-dia-semana">Sex</div>
+        <div class="cal-dia-semana">Sáb</div>
+      </div>
+      <div class="cal-semanas" id="calSemanas"></div>
     </div>
   </div>
 
@@ -492,12 +370,23 @@
   const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api'
   const POR_PAG = 15
 
+  // Statuses que aparecem no painel (excluem buscas que nunca foram salvas)
+  const STATUSES_PAINEL = [
+    'aguardando_aceite', 'aceita', 'aceita_com_observacao',
+    'recusada', 'sem_aceite', 'concluida', 'cancelada'
+  ]
+
   let todasDemandas = []
   let paginaAtual   = 1
   let statusFiltro  = ''
   let dataInicio    = ''
   let dataFim       = ''
+  let tabAtiva      = 'lista'
+  let calMes        = new Date().getMonth()
+  let calAno        = new Date().getFullYear()
+  let modalDemandaId = null
 
+  // ── CARREGAR ──────────────────────────────────────────────────────
   async function carregar() {
     document.getElementById('ultimaAtualizacao').textContent = 'Atualizando...'
     try {
@@ -505,6 +394,7 @@
       todasDemandas = await res.json()
       atualizarMetricas()
       aplicarFiltros()
+      if (tabAtiva === 'calendario') renderCalendario()
       const agora = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' })
       document.getElementById('ultimaAtualizacao').textContent = `Última atualização: ${agora}`
     } catch {
@@ -512,26 +402,30 @@
         <div class="estado-vazio">
           <div class="icone">⚠️</div>
           <strong>Backend indisponível</strong>
-          <p>Verifique se o servidor está rodando em http://localhost:3000</p>
+          <p>Verifique se o servidor está rodando.</p>
         </div>`
       document.getElementById('ultimaAtualizacao').textContent = 'Erro ao carregar'
     }
   }
 
+  // ── MÉTRICAS ──────────────────────────────────────────────────────
   function atualizarMetricas() {
-    const cnt = s => todasDemandas.filter(d => d.status === s).length
-    document.getElementById('m-total').textContent      = todasDemandas.length
-    document.getElementById('m-aguardando').textContent = cnt('aguardando_resposta')
-    document.getElementById('m-aceita').textContent     = cnt('aceita') + cnt('aceita_com_observacao')
-    document.getElementById('m-sem-eleg').textContent   = cnt('sem_consultora_elegivel')
-    document.getElementById('m-sem-disp').textContent   = cnt('sem_disponibilidade')
+    const painel = todasDemandas.filter(d => STATUSES_PAINEL.includes(d.status))
+    const cnt = s => painel.filter(d => d.status === s).length
+    document.getElementById('m-total').textContent     = painel.length
+    document.getElementById('m-aguardando').textContent= cnt('aguardando_aceite')
+    document.getElementById('m-aceita').textContent    = cnt('aceita') + cnt('aceita_com_observacao')
+    document.getElementById('m-recusada').textContent  = cnt('sem_aceite') + cnt('recusada')
+    document.getElementById('m-concluida').textContent = cnt('concluida')
   }
 
+  // ── FILTROS ───────────────────────────────────────────────────────
   function filtrarStatus(s) {
     statusFiltro = s
     document.getElementById('filtroStatus').value = s
     paginaAtual = 1
     renderTabela()
+    mudarTab('lista')
   }
 
   function aplicarFiltros() {
@@ -555,13 +449,15 @@
 
   function filtradas() {
     return todasDemandas.filter(d => {
+      if (!STATUSES_PAINEL.includes(d.status)) return false
       if (statusFiltro && d.status !== statusFiltro) return false
-      if (dataInicio   && d.data < dataInicio)        return false
-      if (dataFim      && d.data > dataFim)           return false
+      if (dataInicio && (d.data_entrega || d.data) < dataInicio) return false
+      if (dataFim    && (d.data_entrega || d.data) > dataFim)    return false
       return true
     })
   }
 
+  // ── TABELA ────────────────────────────────────────────────────────
   function renderTabela() {
     const lista  = filtradas()
     const total  = lista.length
@@ -572,9 +468,9 @@
     if (total === 0) {
       div.innerHTML = `
         <div class="estado-vazio">
-          <div class="icone">🔍</div>
-          <strong>Nenhuma demanda encontrada</strong>
-          <p>Ajuste os filtros ou crie uma nova demanda.</p>
+          <div class="icone">📋</div>
+          <strong>Nenhuma demanda no Painel</strong>
+          <p>Faça uma busca e selecione consultoras para aparecerem aqui.</p>
         </div>`
       document.getElementById('paginacao').style.display = 'none'
       return
@@ -586,12 +482,14 @@
     </tr></thead><tbody>`
 
     pagina.forEach(d => {
+      const data = d.data_entrega || d.data || ''
+      const skill = d.skill_nome || d.skill || '–'
       html += `
         <tr onclick="abrirModal('${d.id}')">
           <td class="td-cliente">${d.cliente}</td>
-          <td class="td-skill">${d.skill}</td>
+          <td class="td-skill">${skill}</td>
           <td>${d.formato || '–'}</td>
-          <td class="td-data">${formatarData(d.data)} ${d.hora_inicio || ''}</td>
+          <td class="td-data">${formatarData(data)}</td>
           <td>${capitalize(d.modalidade || '–')}</td>
           <td>${badgeStatus(d.status)}</td>
           <td class="td-arrow">›</td>
@@ -609,86 +507,204 @@
 
     const btns = document.getElementById('pag-btns')
     btns.innerHTML = ''
-
     const addBtn = (label, pag, ativo, disabled) => {
       const btn = document.createElement('button')
       btn.className = `btn-pag${ativo ? ' ativo' : ''}`
-      btn.disabled  = disabled
+      btn.disabled = disabled
       btn.textContent = label
-      btn.onclick   = () => { paginaAtual = pag; renderTabela() }
+      btn.onclick = () => { paginaAtual = pag; renderTabela() }
       btns.appendChild(btn)
     }
-
     addBtn('‹', paginaAtual - 1, false, paginaAtual === 1)
     for (let p = 1; p <= totalPags; p++) addBtn(p, p, p === paginaAtual, false)
     addBtn('›', paginaAtual + 1, false, paginaAtual === totalPags)
   }
 
+  // ── CALENDÁRIO ────────────────────────────────────────────────────
+  function mudarTab(tab) {
+    tabAtiva = tab
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('ativo', (i === 0 && tab === 'lista') || (i === 1 && tab === 'calendario'))
+    })
+    document.querySelectorAll('.tab-conteudo').forEach((c, i) => {
+      c.classList.toggle('ativo', (i === 0 && tab === 'lista') || (i === 1 && tab === 'calendario'))
+    })
+    if (tab === 'calendario') renderCalendario()
+  }
+
+  function mudarMes(delta) {
+    if (delta === 0) { calMes = new Date().getMonth(); calAno = new Date().getFullYear() }
+    else { calMes += delta }
+    if (calMes > 11) { calMes = 0; calAno++ }
+    if (calMes < 0)  { calMes = 11; calAno-- }
+    renderCalendario()
+  }
+
+  function renderCalendario() {
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+    document.getElementById('calTitulo').textContent = `${meses[calMes]} ${calAno}`
+
+    const primeiroDia = new Date(calAno, calMes, 1)
+    const totalDias   = new Date(calAno, calMes + 1, 0).getDate()
+    const inicioSem   = primeiroDia.getDay()
+    const hoje        = new Date()
+
+    // Demandas do painel com data neste mês
+    const demandasMes = todasDemandas.filter(d => {
+      if (!STATUSES_PAINEL.includes(d.status)) return false
+      const dt = d.data_entrega || d.data
+      if (!dt) return false
+      const [a, m] = dt.split('-')
+      return parseInt(a) === calAno && parseInt(m) - 1 === calMes
+    })
+
+    // Agrupar por dia
+    const porDia = {}
+    demandasMes.forEach(d => {
+      const dia = parseInt((d.data_entrega || d.data).split('-')[2])
+      if (!porDia[dia]) porDia[dia] = []
+      porDia[dia].push(d)
+    })
+
+    // Gerar semanas
+    let html = ''
+    let diaAtual = 1 - inicioSem
+    while (diaAtual <= totalDias) {
+      html += '<div class="cal-semana">'
+      for (let col = 0; col < 7; col++, diaAtual++) {
+        const estesMes = diaAtual >= 1 && diaAtual <= totalDias
+        const ehHoje   = estesMes && diaAtual === hoje.getDate() && calMes === hoje.getMonth() && calAno === hoje.getFullYear()
+        html += `<div class="cal-celula${!estesMes ? ' outro-mes' : ''}${ehHoje ? ' hoje' : ''}">`
+        if (estesMes) {
+          html += `<div class="cal-num">${diaAtual}</div>`
+          const demands = porDia[diaAtual] || []
+          demands.slice(0, 3).forEach(d => {
+            const chipCls = d.status === 'aceita' || d.status === 'aceita_com_observacao'
+              ? 'chip-aceita'
+              : d.status === 'aguardando_aceite' ? 'chip-aguardando'
+              : d.status === 'recusada' || d.status === 'sem_aceite' ? 'chip-recusada'
+              : 'chip-outros'
+            const skill = d.skill_nome || d.skill || ''
+            html += `<span class="cal-chip ${chipCls}" onclick="abrirModal('${d.id}')" title="${d.cliente} · ${skill}">${d.cliente}</span>`
+          })
+          if (demands.length > 3) {
+            html += `<span class="cal-chip chip-outros">+${demands.length - 3} mais</span>`
+          }
+        }
+        html += '</div>'
+      }
+      html += '</div>'
+    }
+
+    document.getElementById('calSemanas').innerHTML = html
+  }
+
+  // ── MODAL ─────────────────────────────────────────────────────────
   async function abrirModal(id) {
+    modalDemandaId = id
     document.getElementById('modal-titulo').textContent = 'Carregando...'
     document.getElementById('modal-id').textContent     = ''
     document.getElementById('modal-body').innerHTML     = `
       <div class="spinner">
-        <div class="dot-row">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
+        <div class="dot-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         <p>Buscando detalhes...</p>
       </div>`
     document.getElementById('modalOverlay').classList.add('aberto')
-
     try {
       const res = await fetch(`${API}/demandas/${id}`)
       const d   = await res.json()
       renderModal(d)
     } catch {
-      document.getElementById('modal-body').innerHTML = `<p style="color:#991b1b;">Erro ao carregar detalhes.</p>`
+      document.getElementById('modal-body').innerHTML = `<p style="color:#991b1b;padding:20px">Erro ao carregar detalhes.</p>`
     }
   }
 
-  function renderModal(d) {
-    document.getElementById('modal-titulo').textContent = `${d.cliente} — ${d.skill}`
+  function renderModal(data) {
+    const d = data.demanda ?? data
+    const sugestoes  = data.sugestoes  ?? []
+    const historico  = data.historico  ?? []
+
+    document.getElementById('modal-titulo').textContent = `${d.cliente} — ${d.skill_nome || d.skill || ''}`
     document.getElementById('modal-id').textContent     = `ID: ${d.id}`
 
-    const consultoras = d.sugestoes_consultoras ?? []
-    const historico   = d.historico_status ?? []
-
+    const data_str = d.data_entrega || d.data || ''
     let html = `
       <div class="modal-grid">
         <div class="modal-campo"><label>Cliente</label><p>${d.cliente}</p></div>
         <div class="modal-campo"><label>Status</label><p>${badgeStatus(d.status)}</p></div>
-        <div class="modal-campo"><label>Skill / Tema</label><p>${d.skill}</p></div>
+        <div class="modal-campo"><label>Skill / Tema</label><p>${d.skill_nome || d.skill || '–'}</p></div>
         <div class="modal-campo"><label>Formato</label><p>${d.formato || '–'}</p></div>
-        <div class="modal-campo"><label>Data</label><p>${formatarData(d.data)}</p></div>
-        <div class="modal-campo"><label>Horário</label>
-          <p>${d.hora_inicio || ''} às ${d.hora_fim || ''} (${d.duracao_minutos} min)</p></div>
+        <div class="modal-campo"><label>Data</label><p>${formatarData(data_str)}</p></div>
+        <div class="modal-campo"><label>Duração</label><p>${d.duracao_minutos || '–'} min</p></div>
         <div class="modal-campo"><label>Modalidade</label><p>${capitalize(d.modalidade || '–')}</p></div>
-        <div class="modal-campo"><label>Criado em</label><p>${formatarTs(d.created_at)}</p></div>
-        ${d.observacoes ? `<div class="modal-campo" style="grid-column:1/-1">
-          <label>Observações</label><p>${d.observacoes}</p></div>` : ''}
+        <div class="modal-campo"><label>Criado em</label><p>${formatarTs(d.criado_em)}</p></div>
+        ${d.observacoes ? `<div class="modal-campo" style="grid-column:1/-1"><label>Observações</label><p>${d.observacoes}</p></div>` : ''}
       </div>`
 
-    if (consultoras.length) {
+    // Consultoras selecionadas com ações
+    const selecionadas = sugestoes.filter(s => s.status_sugestao === 'acionada' || s.status_sugestao === 'aceita' || s.status_sugestao === 'recusada')
+    if (selecionadas.length > 0) {
       html += `<div class="modal-secao"><div class="modal-secao-titulo">Consultoras selecionadas</div>`
-      consultoras.forEach((c, i) => {
-        const notaN  = Math.min(c.nota, 3)
-        const resp   = c.resposta
-        html += `
-          <div class="consultora-row">
+      selecionadas.forEach((c, i) => {
+        const nota  = Math.min(c.nota, 3)
+        const nome  = c.consultora || c.consultoras?.nome || c.consultora_id
+        const email = c.email || c.consultoras?.email || ''
+        const slots = c.slots_disponiveis
+          ? (Array.isArray(c.slots_disponiveis)
+            ? c.slots_disponiveis.map(s => `${s.inicio}–${s.fim}`).join(', ')
+            : '')
+          : ''
+        const emailEnviado = c.status_notificacao != null
+        const respondido   = c.resposta != null
+        const cid = c.consultora_id
+
+        html += `<div class="cons-row" id="cons-row-${cid}">
+          <div class="cons-row-top">
             <div class="cons-ordem">${i + 1}</div>
             <div class="cons-info">
-              <div class="cons-nome">${c.consultoras?.nome ?? c.consultora_id}</div>
-              <div class="cons-email">${c.consultoras?.email ?? ''}</div>
-              ${c.observacao_resposta
-                ? `<div style="font-size:12px;color:#666;margin-top:4px;font-style:italic">"${c.observacao_resposta}"</div>`
-                : ''}
+              <div class="cons-nome">${nome}</div>
+              <div class="cons-email">${email}</div>
+              ${slots ? `<div class="cons-slots">🕐 ${slots}</div>` : ''}
             </div>
-            <div class="cons-nota cons-nota-${notaN}">${c.nota}</div>
-            <span class="cons-resposta ${badgeResposta(resp)}">${labelResposta(resp)}</span>
-          </div>`
+            <div class="cons-nota cons-nota-${nota}">${c.nota}</div>
+          </div>
+          <div class="cons-acoes">`
+
+        if (respondido) {
+          // Já respondeu — só mostra badge
+          const [bLabel, bCls] = labelResposta(c.resposta)
+          html += `<span class="cons-resposta-badge ${bCls}">${bLabel}</span>`
+          if (c.observacao_consultora) {
+            html += `<span style="font-size:12px;color:#666;font-style:italic;">"${c.observacao_consultora}"</span>`
+          }
+        } else if (!emailEnviado) {
+          // Email não enviado ainda
+          html += `<button class="btn-acao btn-enviar" onclick="enviarConvite('${d.id}','${cid}')">
+              📧 Enviar convite
+            </button>
+            <button class="btn-acao btn-aceitar" onclick="registrarResposta('${d.id}','${cid}','aceita')">
+              ✅ Aceitou
+            </button>
+            <button class="btn-acao btn-recusar" onclick="registrarResposta('${d.id}','${cid}','recusada')">
+              ❌ Recusou
+            </button>`
+        } else {
+          // Email enviado, aguardando resposta
+          html += `<span style="font-size:12px;color:#b77a00;font-weight:700;">📧 Convite enviado · Aguardando resposta</span>
+            <button class="btn-acao btn-aceitar" onclick="registrarResposta('${d.id}','${cid}','aceita')">
+              ✅ Aceitou
+            </button>
+            <button class="btn-acao btn-recusar" onclick="registrarResposta('${d.id}','${cid}','recusada')">
+              ❌ Recusou
+            </button>`
+        }
+
+        html += `</div></div>`
       })
       html += `</div>`
     }
 
+    // Histórico
     if (historico.length) {
       html += `<div class="modal-secao"><div class="modal-secao-titulo">Histórico</div>`
       historico.forEach((h, i) => {
@@ -699,9 +715,8 @@
               ${i < historico.length - 1 ? '<div class="hist-fio"></div>' : ''}
             </div>
             <div class="hist-conteudo">
-              <div class="hist-acao">${h.acao || h.status_novo}</div>
+              <div class="hist-acao">${h.status_novo || h.acao || '–'}</div>
               <div class="hist-ts">${formatarTs(h.criado_em)}</div>
-              ${h.observacao ? `<div class="hist-obs">"${h.observacao}"</div>` : ''}
             </div>
           </div>`
       })
@@ -711,44 +726,82 @@
     document.getElementById('modal-body').innerHTML = html
   }
 
+  // ── AÇÕES DO MODAL ────────────────────────────────────────────────
+  async function enviarConvite(demandaId, consultoraId) {
+    const btn = event.target
+    btn.disabled = true
+    btn.textContent = 'Enviando...'
+    try {
+      const res = await fetch(`${API}/demandas/${demandaId}/acionar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_id: consultoraId }),
+      })
+      if (res.ok) {
+        await abrirModal(demandaId)  // recarrega modal
+      } else {
+        const d = await res.json()
+        btn.disabled = false; btn.textContent = '📧 Enviar convite'
+        alert(d.erro ?? 'Erro ao enviar convite.')
+      }
+    } catch {
+      btn.disabled = false; btn.textContent = '📧 Enviar convite'
+      alert('Erro de conexão.')
+    }
+  }
+
+  async function registrarResposta(demandaId, consultoraId, resposta) {
+    const btn = event.target
+    btn.disabled = true
+
+    try {
+      const res = await fetch(`${API}/demandas/${demandaId}/resposta-manual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_id: consultoraId, resposta }),
+      })
+      if (res.ok) {
+        await abrirModal(demandaId)  // recarrega modal
+        carregar()                   // atualiza tabela e métricas
+      } else {
+        const d = await res.json()
+        btn.disabled = false
+        alert(d.erro ?? 'Erro ao registrar resposta.')
+      }
+    } catch {
+      btn.disabled = false
+      alert('Erro de conexão.')
+    }
+  }
+
   function fecharModal(e) {
     if (e.target === document.getElementById('modalOverlay')) fecharModalDireto()
   }
-
   function fecharModalDireto() {
     document.getElementById('modalOverlay').classList.remove('aberto')
   }
 
+  // ── UTILS ─────────────────────────────────────────────────────────
   const STATUS_MAP = {
-    pendente:               ['Pendente',             'badge-pendente'],
-    aguardando_resposta:    ['Aguardando resposta',  'badge-aguardando'],
-    aceita:                 ['Aceita',               'badge-aceita'],
-    aceita_com_observacao:  ['Aceita c/ obs.',       'badge-aceita_obs'],
-    recusada:               ['Recusada',             'badge-recusada'],
-    sem_consultora_elegivel:['Sem elegível',         'badge-sem_elegivel'],
-    sem_disponibilidade:    ['Sem disponibilidade',  'badge-sem_disponivel'],
-    cancelada:              ['Cancelada',            'badge-cancelada'],
+    aguardando_aceite:       ['Aguardando resposta', 'badge-aguardando'],
+    aceita:                  ['Aceita',              'badge-aceita'],
+    aceita_com_observacao:   ['Aceita c/ obs.',      'badge-aceita_obs'],
+    recusada:                ['Recusada',            'badge-recusada'],
+    sem_aceite:              ['Sem aceite',          'badge-sem_aceite'],
+    concluida:               ['Concluída',           'badge-concluida'],
+    cancelada:               ['Cancelada',           'badge-cancelada'],
   }
 
   const badgeStatus = s => {
-    const [label, cls] = STATUS_MAP[s] ?? [s, 'badge-pendente']
+    const [label, cls] = STATUS_MAP[s] ?? [s ?? '–', 'badge-cancelada']
     return `<span class="badge ${cls}">${label}</span>`
   }
 
   const labelResposta = r => {
-    if (!r || r === 'pendente')        return 'Pendente'
-    if (r === 'aceita')                return 'Aceitou'
-    if (r === 'recusada')              return 'Recusou'
-    if (r === 'aceita_com_observacao') return 'Aceite c/ obs.'
-    return r
-  }
-
-  const badgeResposta = r => {
-    if (!r || r === 'pendente')        return 'badge-aguardando'
-    if (r === 'aceita')                return 'badge-aceita'
-    if (r === 'recusada')              return 'badge-recusada'
-    if (r === 'aceita_com_observacao') return 'badge-aceita_obs'
-    return 'badge-pendente'
+    if (r === 'aceita')                return ['✅ Aceitou',        'badge-aceita']
+    if (r === 'recusada')              return ['❌ Recusou',         'badge-recusada']
+    if (r === 'aceita_com_observacao') return ['✅ Aceitou c/ obs.', 'badge-aceita_obs']
+    return ['Pendente', 'badge-aguardando']
   }
 
   const formatarData = d => {

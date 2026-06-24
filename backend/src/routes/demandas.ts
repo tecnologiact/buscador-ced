@@ -255,6 +255,56 @@ demandasRouter.post('/:id/acionar', async (req: Request, res: Response) => {
 })
 
 // ----------------------------------------------------------------
+// POST /api/demandas/:id/resposta-manual
+// Gestão registra manualmente se consultora aceitou ou recusou
+// ----------------------------------------------------------------
+demandasRouter.post('/:id/resposta-manual', async (req: Request, res: Response) => {
+  const { consultora_id, resposta, observacao } = req.body as {
+    consultora_id: string
+    resposta: 'aceita' | 'recusada' | 'aceita_com_observacao'
+    observacao?: string
+  }
+
+  if (!consultora_id || !resposta) {
+    return res.status(400).json({ erro: 'consultora_id e resposta são obrigatórios' })
+  }
+
+  const respostasValidas = ['aceita', 'recusada', 'aceita_com_observacao']
+  if (!respostasValidas.includes(resposta)) {
+    return res.status(400).json({ erro: 'Resposta inválida' })
+  }
+
+  // Atualizar notificação (se existir)
+  await supabase
+    .from('notificacoes')
+    .update({
+      resposta,
+      observacao_consultora: observacao ?? null,
+      respondido_em: new Date().toISOString(),
+      status: 'respondida',
+    })
+    .eq('demanda_id', req.params.id)
+    .eq('consultora_id', consultora_id)
+
+  // Atualizar sugestão
+  await supabase
+    .from('sugestoes_consultoras')
+    .update({ status: resposta === 'recusada' ? 'recusada' : 'aceita' })
+    .eq('demanda_id', req.params.id)
+    .eq('consultora_id', consultora_id)
+
+  // Se aceita, atualizar demanda
+  if (resposta === 'aceita' || resposta === 'aceita_com_observacao') {
+    await supabase
+      .from('demandas')
+      .update({ status: 'aceita', consultora_selecionada_id: consultora_id })
+      .eq('id', req.params.id)
+  }
+
+  return res.json({ mensagem: 'Resposta registrada com sucesso.' })
+})
+
+// ----------------------------------------------------------------
 // GET /api/demandas
 // Lista para o painel Brunno/Dani
 // ----------------------------------------------------------------
