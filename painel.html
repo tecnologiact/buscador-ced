@@ -171,7 +171,7 @@
     .cons-nota-3 { background: var(--verde); }
     .cons-nota-2 { background: var(--azul); }
 
-    /* AÇÕES DA CONSULTORA */
+    /* AÇÕES DA CONSULTORA (modal) */
     .cons-acoes { padding: 10px 14px; border-top: 1px solid var(--cinza-borda); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .btn-acao { border: none; border-radius: 4px; padding: 7px 14px; font-size: 12px; font-weight: 700; font-family: 'Roboto', Arial, sans-serif; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
     .btn-acao:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -184,6 +184,17 @@
     .btn-obs     { background: var(--roxo); color: white; }
     .btn-obs:hover:not(:disabled) { background: #241ab3; }
     .cons-resposta-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+    /* AÇÕES INLINE NA TABELA */
+    .td-acoes { white-space: nowrap; }
+    .btn-inline { border: none; border-radius: 4px; padding: 5px 11px; font-size: 11px; font-weight: 700; font-family: 'Roboto', Arial, sans-serif; cursor: pointer; letter-spacing: 0.3px; transition: all 0.15s; margin-right: 4px; }
+    .btn-inline:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-inline-aceitar { background: var(--verde); color: white; }
+    .btn-inline-aceitar:hover:not(:disabled) { background: #008a4a; }
+    .btn-inline-recusar { background: var(--vermelho); color: white; }
+    .btn-inline-recusar:hover:not(:disabled) { background: #cc1a22; }
+    .btn-inline-enviar  { background: var(--preto); color: white; }
+    .btn-inline-enviar:hover:not(:disabled)  { background: #333; }
 
     /* HISTÓRICO */
     .historico-item { display: flex; gap: 12px; margin-bottom: 10px; }
@@ -432,13 +443,38 @@
 
     let html = `<table><thead><tr>
       <th>Cliente</th><th>Skill / Tema</th><th>Formato</th>
-      <th>Data</th><th>Consultora(s)</th><th>Status</th><th></th>
+      <th>Data</th><th>Consultora(s)</th><th>Status</th><th>Ações</th>
     </tr></thead><tbody>`
 
     pagina.forEach(d => {
       const data = d.data_entrega || d.data || ''
       const skill = d.skill_nome || d.skill || '–'
       const consultoras = d.consultoras_acionadas || d.consultora_selecionada || '—'
+
+      // Botões de ação inline por status
+      let acoesHtml = ''
+      if (d.status === 'aguardando_aceite') {
+        acoesHtml = `
+          <button class="btn-inline btn-inline-enviar"
+                  onclick="event.stopPropagation(); enviarConviteInline('${d.id}', this)">
+            📧 Convidar
+          </button>
+          <button class="btn-inline btn-inline-aceitar"
+                  onclick="event.stopPropagation(); acaoInline('${d.id}', 'aceita', this)">
+            ✅ Aceitou
+          </button>
+          <button class="btn-inline btn-inline-recusar"
+                  onclick="event.stopPropagation(); acaoInline('${d.id}', 'recusada', this)">
+            ❌ Recusou
+          </button>`
+      } else if (d.status === 'aceita' || d.status === 'aceita_com_observacao') {
+        acoesHtml = `<span style="font-size:11px;font-weight:700;color:var(--verde);">✅ Aceita</span>`
+      } else if (d.status === 'recusada') {
+        acoesHtml = `<span style="font-size:11px;font-weight:700;color:#991b1b;">❌ Recusada</span>`
+      } else if (d.status === 'sem_aceite') {
+        acoesHtml = `<span style="font-size:11px;color:#aaa;">Sem retorno</span>`
+      }
+
       html += `
         <tr onclick="abrirModal('${d.id}')">
           <td class="td-cliente">${d.cliente}</td>
@@ -447,7 +483,7 @@
           <td class="td-data">${formatarData(data)}</td>
           <td style="font-size:12px;font-weight:600;color:var(--preto)">${consultoras}</td>
           <td>${badgeStatus(d.status)}</td>
-          <td class="td-arrow">›</td>
+          <td class="td-acoes" onclick="event.stopPropagation()">${acoesHtml}</td>
         </tr>`
     })
 
@@ -725,6 +761,64 @@
       }
     } catch {
       btn.disabled = false
+      alert('Erro de conexão.')
+    }
+  }
+
+  // ── AÇÕES INLINE (direto na tabela, sem modal) ────────────────────
+  async function _getConsultoraAcionada(demandaId) {
+    const res = await fetch(`${API}/demandas/${demandaId}`)
+    const data = await res.json()
+    const sugestoes = data.sugestoes ?? []
+    return sugestoes.find(s =>
+      s.status_sugestao === 'acionada' || s.status_sugestao === 'aceita'
+    )
+  }
+
+  async function acaoInline(demandaId, resposta, btn) {
+    btn.disabled = true
+    btn.textContent = '...'
+    try {
+      const c = await _getConsultoraAcionada(demandaId)
+      if (!c) { alert('Consultora não encontrada.'); btn.disabled = false; return }
+      const res = await fetch(`${API}/demandas/${demandaId}/resposta-manual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_id: c.consultora_id, resposta }),
+      })
+      if (res.ok) {
+        carregar()
+      } else {
+        const d = await res.json()
+        btn.disabled = false
+        alert(d.erro ?? 'Erro ao registrar resposta.')
+      }
+    } catch {
+      btn.disabled = false
+      alert('Erro de conexão.')
+    }
+  }
+
+  async function enviarConviteInline(demandaId, btn) {
+    btn.disabled = true
+    btn.textContent = 'Enviando...'
+    try {
+      const c = await _getConsultoraAcionada(demandaId)
+      if (!c) { alert('Consultora não encontrada.'); btn.disabled = false; return }
+      const res = await fetch(`${API}/demandas/${demandaId}/acionar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consultora_id: c.consultora_id }),
+      })
+      if (res.ok) {
+        carregar()
+      } else {
+        const d = await res.json()
+        btn.disabled = false; btn.textContent = '📧 Convidar'
+        alert(d.erro ?? 'Erro ao enviar convite.')
+      }
+    } catch {
+      btn.disabled = false; btn.textContent = '📧 Convidar'
       alert('Erro de conexão.')
     }
   }
