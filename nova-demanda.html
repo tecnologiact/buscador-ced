@@ -264,39 +264,39 @@
     /* DEMANDA ID */
     .demanda-id { font-size: 11px; color: #aaa; margin-top: 6px; font-family: monospace; }
 
-    /* CSV SECTION */
-    .card-csv {
+    /* ABAS */
+    .abas-wrapper {
       background: var(--branco);
       border-radius: 4px;
-      margin-bottom: 20px;
-      border-top: 4px solid var(--preto);
+      border-top: 4px solid var(--vermelho);
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
       overflow: hidden;
     }
 
-    .csv-toggle {
-      width: 100%; text-align: left;
-      padding: 20px 36px;
-      background: none; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
+    .abas-barra {
+      display: flex;
+      border-bottom: 2px solid var(--cinza-borda);
+    }
+    .aba-btn {
+      padding: 16px 28px;
+      font-size: 13px; font-weight: 700;
       font-family: 'Roboto', Arial, sans-serif;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--cinza-texto);
+      background: none; border: none; cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
     }
-    .csv-toggle-title {
-      font-size: 14px; font-weight: 700;
-      color: var(--preto);
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .csv-toggle-seta {
-      font-size: 12px; color: var(--cinza-texto);
-      transition: transform 0.2s;
-    }
-    .csv-toggle.aberto .csv-toggle-seta { transform: rotate(180deg); }
+    .aba-btn:hover { color: var(--preto); }
+    .aba-btn.ativa { color: var(--vermelho); border-bottom-color: var(--vermelho); }
 
-    .csv-body {
-      display: none;
-      padding: 0 36px 36px;
-    }
-    .csv-body.aberto { display: block; }
+    .aba-painel { display: none; padding: 32px 36px; }
+    .aba-painel.ativa { display: block; }
+
+    /* CSV SECTION (dentro da aba) */
+    .csv-body { padding: 0; }
 
     .csv-desc {
       font-size: 13px; color: var(--cinza-texto);
@@ -379,8 +379,8 @@
       header { padding: 0 20px; }
       nav { padding: 0 20px; }
       .container { padding: 0 16px; margin: 24px auto; }
-      .card, .csv-body { padding: 24px 20px; }
-      .csv-toggle { padding: 16px 20px; }
+      .aba-painel { padding: 24px 20px; }
+      .aba-btn { padding: 14px 16px; font-size: 11px; }
     }
   </style>
 </head>
@@ -410,102 +410,110 @@
     <p>Consulte disponibilidade, selecione as consultoras e salve no Painel para acionar.</p>
   </div>
 
-  <!-- BUSCA INDIVIDUAL -->
-  <div class="card">
-    <h2>Busca Individual</h2>
-    <form id="formDemanda" class="form-grid">
+  <!-- ABAS: BUSCA INDIVIDUAL | BUSCA EM VOLUME -->
+  <div class="abas-wrapper">
 
-      <div class="grid-2">
-        <div class="campo">
-          <label>Cliente *</label>
-          <input type="text" id="cliente" placeholder="Nome do cliente" required>
-        </div>
-        <div class="campo">
-          <label>Skill / Tema *</label>
-          <select id="skill" required>
-            <option value="">Carregando temas...</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="campo">
-          <label>Formato *</label>
-          <select id="formato" required onchange="onFormatoChange()">
-            <option value="">Selecione</option>
-            <option value="Masterclass interativa">Masterclass interativa · até 2h</option>
-            <option value="Skill Lab ou Mini Bootcamp">Skill Lab ou Mini Bootcamp · 2h–4h</option>
-            <option value="Learning Sprint">Learning Sprint · 4h–6h</option>
-            <option value="Simulation Lab">Simulation Lab · 4h–8h</option>
-            <option value="Hackathon">Hackathon · 6h–8h</option>
-            <option value="Mentoring Lab">Mentoring Lab · ciclo de sessões</option>
-            <option value="Career Milestone">Career Milestone · 2h–4h</option>
-            <option value="Assessment Experience">Assessment Experience · devolutiva 1h30–2h</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label>Modalidade *</label>
-          <select id="modalidade" required>
-            <option value="">Selecione</option>
-            <option value="online">Online</option>
-            <option value="presencial">Presencial</option>
-            <option value="hibrido">Híbrido</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="campo campo-condicional" id="campo-num-sessoes">
-        <label>Número de sessões *</label>
-        <input type="number" id="numSessoes" min="1" max="20" step="1" placeholder="Ex: 4">
-        <p class="aviso-inline">Mentoring Lab funciona em ciclos. Informe o total de sessões previstas.</p>
-      </div>
-
-      <div class="campo">
-        <label>Datas *</label>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="date" id="dataInput" style="flex:1">
-          <button type="button" class="btn-secondary" onclick="adicionarData()" style="white-space:nowrap;padding:10px 16px;">+ Adicionar</button>
-        </div>
-        <div id="datasChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:0;"></div>
-        <p class="aviso-inline" style="margin-top:4px;">📅 Busca disponibilidade em cada data selecionada (08h–19h)</p>
-      </div>
-
-      <div class="campo">
-        <label>Observações</label>
-        <textarea id="observacoes" placeholder="Ex: Cliente pediu foco em jovens talentos"></textarea>
-      </div>
-
-      <button type="submit" class="btn-primary" id="btnBuscar">
-        Consultar Disponibilidade
+    <!-- Barra de abas -->
+    <div class="abas-barra">
+      <button class="aba-btn ativa" id="btnAbaIndividual" onclick="mudarAba('individual')">
+        🔍 Busca Individual
       </button>
-
-    </form>
-  </div>
-
-  <!-- SPINNER -->
-  <div class="spinner" id="spinner">
-    <div class="dot-row">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <button class="aba-btn" id="btnAbaVolume" onclick="mudarAba('volume')">
+        📊 Busca em Volume
+      </button>
     </div>
-    <p>Consultando agenda e buscando consultoras disponíveis...</p>
-  </div>
 
-  <!-- RESULTADO INDIVIDUAL -->
-  <div class="card" id="resultado" style="display:none">
-    <h2>Resultado da Consulta</h2>
-    <div id="conteudoResultado"></div>
-    <button class="btn-salvar" id="btnSalvarPainel" onclick="salvarNoPainel()">
-      Salvar 0 no Painel →
-    </button>
-  </div>
+    <!-- ABA: BUSCA INDIVIDUAL -->
+    <div class="aba-painel ativa" id="abaIndividual">
+      <form id="formDemanda" class="form-grid">
 
-  <!-- CONSULTA EM VOLUME (CSV) -->
-  <div class="card-csv">
-    <button class="csv-toggle" id="btnToggleCSV" onclick="toggleCSV()" type="button">
-      <span class="csv-toggle-title">📊 Consulta em Volume — CSV</span>
-      <span class="csv-toggle-seta">▼</span>
-    </button>
-    <div class="csv-body" id="csvBody">
+        <div class="grid-2">
+          <div class="campo">
+            <label>Cliente *</label>
+            <input type="text" id="cliente" placeholder="Nome do cliente" required>
+          </div>
+          <div class="campo">
+            <label>Skill / Tema *</label>
+            <select id="skill" required>
+              <option value="">Carregando temas...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Formato *</label>
+            <select id="formato" required onchange="onFormatoChange()">
+              <option value="">Selecione</option>
+              <option value="Masterclass interativa">Masterclass interativa · até 2h</option>
+              <option value="Skill Lab ou Mini Bootcamp">Skill Lab ou Mini Bootcamp · 2h–4h</option>
+              <option value="Learning Sprint">Learning Sprint · 4h–6h</option>
+              <option value="Simulation Lab">Simulation Lab · 4h–8h</option>
+              <option value="Hackathon">Hackathon · 6h–8h</option>
+              <option value="Mentoring Lab">Mentoring Lab · ciclo de sessões</option>
+              <option value="Career Milestone">Career Milestone · 2h–4h</option>
+              <option value="Assessment Experience">Assessment Experience · devolutiva 1h30–2h</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Modalidade *</label>
+            <select id="modalidade" required>
+              <option value="">Selecione</option>
+              <option value="online">Online</option>
+              <option value="presencial">Presencial</option>
+              <option value="hibrido">Híbrido</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo campo-condicional" id="campo-num-sessoes">
+          <label>Número de sessões *</label>
+          <input type="number" id="numSessoes" min="1" max="20" step="1" placeholder="Ex: 4">
+          <p class="aviso-inline">Mentoring Lab funciona em ciclos. Informe o total de sessões previstas.</p>
+        </div>
+
+        <div class="campo">
+          <label>Datas *</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="date" id="dataInput" style="flex:1">
+            <button type="button" class="btn-secondary" onclick="adicionarData()" style="white-space:nowrap;padding:10px 16px;">+ Adicionar</button>
+          </div>
+          <div id="datasChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:0;"></div>
+          <p class="aviso-inline" style="margin-top:4px;">📅 Busca disponibilidade em cada data selecionada (08h–19h)</p>
+        </div>
+
+        <div class="campo">
+          <label>Observações</label>
+          <textarea id="observacoes" placeholder="Ex: Cliente pediu foco em jovens talentos"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnBuscar">
+          Consultar Disponibilidade
+        </button>
+
+      </form>
+
+      <!-- SPINNER (dentro da aba) -->
+      <div class="spinner" id="spinner" style="margin-top:16px;">
+        <div class="dot-row">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <p>Consultando agenda e buscando consultoras disponíveis...</p>
+      </div>
+
+      <!-- RESULTADO -->
+      <div id="resultado" style="display:none;margin-top:24px;">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+                  color:var(--cinza-texto);margin-bottom:16px;">Resultado da Consulta</p>
+        <div id="conteudoResultado"></div>
+        <button class="btn-salvar" id="btnSalvarPainel" onclick="salvarNoPainel()">
+          Salvar 0 no Painel →
+        </button>
+      </div>
+    </div>
+
+    <!-- ABA: BUSCA EM VOLUME -->
+    <div class="aba-painel" id="abaVolume">
       <p class="csv-desc">
         Faça várias consultas de uma vez. Baixe o modelo, preencha com as demandas do time e suba o arquivo.
         As consultas não gravam no banco — só o que você selecionar e salvar vai para o Painel.
@@ -566,6 +574,7 @@
         </button>
       </div>
     </div>
+
   </div>
 
 </div>
@@ -888,13 +897,15 @@
       </div>`
   }
 
-  // ── CSV SECTION ───────────────────────────────────────────────────
-  function toggleCSV() {
-    const btn = document.getElementById('btnToggleCSV')
-    const body = document.getElementById('csvBody')
-    btn.classList.toggle('aberto')
-    body.classList.toggle('aberto')
+  // ── ABAS ──────────────────────────────────────────────────────────
+  function mudarAba(aba) {
+    document.getElementById('abaIndividual').classList.toggle('ativa', aba === 'individual')
+    document.getElementById('abaVolume').classList.toggle('ativa', aba === 'volume')
+    document.getElementById('btnAbaIndividual').classList.toggle('ativa', aba === 'individual')
+    document.getElementById('btnAbaVolume').classList.toggle('ativa', aba === 'volume')
   }
+
+  // ── CSV SECTION ───────────────────────────────────────────────────
 
   function baixarTemplate() {
     // Ponto e vírgula como separador — padrão do Excel em português (pt-BR)
