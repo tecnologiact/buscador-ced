@@ -432,19 +432,20 @@
 
     let html = `<table><thead><tr>
       <th>Cliente</th><th>Skill / Tema</th><th>Formato</th>
-      <th>Data</th><th>Modalidade</th><th>Status</th><th></th>
+      <th>Data</th><th>Consultora(s)</th><th>Status</th><th></th>
     </tr></thead><tbody>`
 
     pagina.forEach(d => {
       const data = d.data_entrega || d.data || ''
       const skill = d.skill_nome || d.skill || '–'
+      const consultoras = d.consultoras_acionadas || d.consultora_selecionada || '—'
       html += `
         <tr onclick="abrirModal('${d.id}')">
           <td class="td-cliente">${d.cliente}</td>
           <td class="td-skill">${skill}</td>
           <td>${d.formato || '–'}</td>
           <td class="td-data">${formatarData(data)}</td>
-          <td>${capitalize(d.modalidade || '–')}</td>
+          <td style="font-size:12px;font-weight:600;color:var(--preto)">${consultoras}</td>
           <td>${badgeStatus(d.status)}</td>
           <td class="td-arrow">›</td>
         </tr>`
