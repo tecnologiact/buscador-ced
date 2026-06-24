@@ -909,20 +909,47 @@
 
   function baixarTemplate() {
     // Ponto e vírgula como separador — padrão do Excel em português (pt-BR)
+    // ATENÇÃO: data deve estar no formato AAAA-MM-DD (ex: 2026-07-10)
     const sep = ';'
     const linhas = [
-      'sep=;', // instrui o Excel a usar ; como separador ao abrir
-      ['cliente','skill','formato','data','duracao_minutos','modalidade','observacoes'].join(sep),
-      ['Empresa ABC','Comunicação e Feedback','Masterclass interativa','2026-07-10','120','online',''].join(sep),
-      ['Empresa XYZ','Inteligência Emocional e Autogestão','Skill Lab ou Mini Bootcamp','2026-07-15','240','presencial','Foco em lideranças'].join(sep),
-      ['Startup ZZZ','Mentores','Mentoring Lab','2026-07-20','60','online','Ciclo de 4 sessões'].join(sep),
+      'sep=;',
+      // Data DEVE ser AAAA-MM-DD. Modalidade: online | presencial | hibrido
+      ['cliente','skill','formato','data (AAAA-MM-DD)','modalidade','observacoes'].join(sep),
+      ['Empresa ABC','Comunicação e Feedback','Masterclass interativa','2026-07-10','online',''].join(sep),
+      ['Empresa XYZ','Inteligência Emocional e Autogestão','Skill Lab ou Mini Bootcamp','2026-07-15','presencial','Foco em lideranças'].join(sep),
+      ['Startup ZZZ','Mentores','Mentoring Lab','2026-07-20','online','Ciclo de 4 sessões'].join(sep),
     ]
-    const csv = '﻿' + linhas.join('\n') // BOM para Excel reconhecer UTF-8
+    const csv = '﻿' + linhas.join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url; a.download = 'modelo-consulta-ced.csv'
     a.click(); URL.revokeObjectURL(url)
+  }
+
+  // Converte datas em vários formatos para YYYY-MM-DD
+  function normalizarData(raw) {
+    if (!raw) return ''
+    const s = raw.trim()
+
+    // Já está correto: 2026-07-10
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
+
+    // DD/MM/YYYY ou D/M/YYYY
+    const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+    if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`
+
+    // DD-MM-YYYY
+    const dmy2 = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/)
+    if (dmy2) return `${dmy2[3]}-${dmy2[2].padStart(2,'0')}-${dmy2[1].padStart(2,'0')}`
+
+    // Tenta o Date nativo como fallback
+    const parsed = new Date(s)
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toISOString().slice(0, 10)
+    }
+
+    return '' // inválido — o backend vai rejeitar com mensagem clara
   }
 
   function onFileSelected(input) {
@@ -1004,12 +1031,14 @@
       document.getElementById('csvProgressoTexto').textContent =
         `Processando ${i + 1} de ${_csvLinhas.length}...`
 
+      const formato = linha.formato || 'Masterclass interativa'
+      const dataRaw = linha['data (AAAA-MM-DD)'] || linha.data || ''
       const body = {
         cliente:        linha.cliente || `Demanda ${i + 1}`,
         skill:          linha.skill || '',
-        formato:        linha.formato || 'Masterclass interativa',
-        data:           linha.data || '',
-        duracaoMinutos: parseInt(linha.duracao_minutos) || 60,
+        formato,
+        data:           normalizarData(dataRaw),
+        duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? parseInt(linha.duracao_minutos) || 60,
         modalidade:     linha.modalidade || 'online',
         observacoes:    linha.observacoes || undefined,
       }
@@ -1045,13 +1074,23 @@
     tbody.innerHTML = _bulkResultados.map(r => {
       const d = r.dados
       const temConsultoras = d.selecionadas?.length > 0
-      const statusInfo = d.erro
-        ? { cls: 'pill-erro', label: `❌ ${d.erro}` }
-        : d.status === 'consultoras_encontradas' || d.status === 'ok'
-          ? { cls: 'pill-ok', label: `✅ ${d.selecionadas.length} encontrada(s)` }
-          : d.status === 'sem_consultora_elegivel'
-            ? { cls: 'pill-erro', label: '❌ Sem consultoras para essa skill' }
-            : { cls: 'pill-aviso', label: '⚠️ Sem disponibilidade nessa data' }
+      let statusInfo
+      if (d.erro) {
+        // Identifica o campo problemático para mensagem amigável
+        const campos = d.detalhes?.fieldErrors ?? {}
+        const campoErro = campos.data ? 'Data inválida — use AAAA-MM-DD'
+          : campos.modalidade ? 'Modalidade inválida — use: online, presencial ou hibrido'
+          : campos.skill ? 'Skill obrigatória'
+          : campos.cliente ? 'Cliente obrigatório'
+          : d.erro
+        statusInfo = { cls: 'pill-erro', label: `❌ ${campoErro}` }
+      } else if (d.status === 'consultoras_encontradas' || d.status === 'ok') {
+        statusInfo = { cls: 'pill-ok', label: `✅ ${d.selecionadas.length} encontrada(s)` }
+      } else if (d.status === 'sem_consultora_elegivel') {
+        statusInfo = { cls: 'pill-erro', label: '❌ Sem consultoras para essa skill' }
+      } else {
+        statusInfo = { cls: 'pill-aviso', label: '⚠️ Sem disponibilidade nessa data' }
+      }
 
       const nomes = d.selecionadas?.map(c => c.nome).join(', ') || '—'
 
