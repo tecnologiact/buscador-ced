@@ -413,10 +413,10 @@
 
     <!-- Barra de abas -->
     <div class="abas-barra">
-      <button class="aba-btn ativa" id="btnAbaIndividual" onclick="mudarAba('individual')">
+      <button type="button" class="aba-btn ativa" id="btnAbaIndividual" onclick="mudarAba('individual')">
         🔍 Busca Individual
       </button>
-      <button class="aba-btn" id="btnAbaVolume" onclick="mudarAba('volume')">
+      <button type="button" class="aba-btn" id="btnAbaVolume" onclick="mudarAba('volume')">
         📊 Busca em Volume
       </button>
     </div>
@@ -615,13 +615,35 @@
   let _bulkSelecionadas = new Set() // índices selecionados
 
   // ── SKILLS ────────────────────────────────────────────────────────
+  function preencherSkillsFallback(sel, nota) {
+    sel.innerHTML = '<option value="">Selecione o tema</option>'
+    SKILLS_FALLBACK.forEach(nome => {
+      const o = document.createElement('option')
+      o.value = nome; o.textContent = nome
+      sel.appendChild(o)
+    })
+    if (nota) {
+      const av = document.createElement('p')
+      av.style.cssText = 'font-size:11px;color:#aaa;margin-top:4px;'
+      av.textContent = 'Usando lista local — conecte o backend para sincronizar.'
+      sel.parentNode.appendChild(av)
+    }
+  }
+
   async function carregarSkills() {
     const sel = document.getElementById('skill')
+    // Carrega fallback imediatamente — o usuário não fica travado
+    preencherSkillsFallback(sel, false)
+
+    // Tenta atualizar da API em background (com timeout manual)
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 4000)
     try {
-      const res = await fetch(`${API}/skills`, { signal: AbortSignal.timeout(4000) })
-      if (!res.ok) throw new Error()
+      const res = await fetch(`${API}/skills`, { signal: controller.signal })
+      clearTimeout(timer)
+      if (!res.ok) return
       const skills = await res.json()
-      if (!Array.isArray(skills) || !skills.length) throw new Error()
+      if (!Array.isArray(skills) || !skills.length) return
       sel.innerHTML = '<option value="">Selecione o tema</option>'
       skills.forEach(s => {
         const o = document.createElement('option')
@@ -629,16 +651,8 @@
         sel.appendChild(o)
       })
     } catch {
-      sel.innerHTML = '<option value="">Selecione o tema</option>'
-      SKILLS_FALLBACK.forEach(nome => {
-        const o = document.createElement('option')
-        o.value = nome; o.textContent = nome
-        sel.appendChild(o)
-      })
-      const av = document.createElement('p')
-      av.style.cssText = 'font-size:11px;color:#aaa;margin-top:4px;'
-      av.textContent = 'Usando lista local — conecte o backend para sincronizar.'
-      sel.parentNode.appendChild(av)
+      clearTimeout(timer)
+      // fallback já carregado — não precisa fazer nada
     }
   }
 
