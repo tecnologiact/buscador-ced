@@ -50,22 +50,6 @@
     .topo h1 span { color: var(--vermelho); }
     .ultima-atualizacao { font-size: 12px; color: #aaa; white-space: nowrap; }
 
-    /* MÉTRICAS */
-    .metricas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
-    .metrica-card { background: var(--branco); border-radius: 4px; padding: 20px 18px; border-top: 4px solid var(--cinza-borda); box-shadow: 0 1px 6px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
-    .metrica-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-    .mc-total      { border-top-color: var(--preto); }
-    .mc-aguardando { border-top-color: var(--laranja); }
-    .mc-aceita     { border-top-color: var(--verde); }
-    .mc-recusada   { border-top-color: var(--vermelho); }
-    .mc-concluida  { border-top-color: var(--azul); }
-    .metrica-num { font-size: 36px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
-    .mc-total      .metrica-num { color: var(--preto); }
-    .mc-aguardando .metrica-num { color: var(--laranja); }
-    .mc-aceita     .metrica-num { color: var(--verde); }
-    .mc-recusada   .metrica-num { color: var(--vermelho); }
-    .mc-concluida  .metrica-num { color: var(--azul); }
-    .metrica-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--cinza-texto); }
 
     /* TABS */
     .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--cinza-borda); }
@@ -254,30 +238,6 @@
     <div class="ultima-atualizacao" id="ultimaAtualizacao">Carregando...</div>
   </div>
 
-  <!-- MÉTRICAS -->
-  <div class="metricas">
-    <div class="metrica-card mc-total" onclick="filtrarStatus('')">
-      <div class="metrica-num" id="m-total">–</div>
-      <div class="metrica-label">No Painel</div>
-    </div>
-    <div class="metrica-card mc-aguardando" onclick="filtrarStatus('aguardando_aceite')">
-      <div class="metrica-num" id="m-aguardando">–</div>
-      <div class="metrica-label">Aguardando</div>
-    </div>
-    <div class="metrica-card mc-aceita" onclick="filtrarStatus('aceita')">
-      <div class="metrica-num" id="m-aceita">–</div>
-      <div class="metrica-label">Aceitas</div>
-    </div>
-    <div class="metrica-card mc-recusada" onclick="filtrarStatus('sem_aceite')">
-      <div class="metrica-num" id="m-recusada">–</div>
-      <div class="metrica-label">Sem aceite</div>
-    </div>
-    <div class="metrica-card mc-concluida" onclick="filtrarStatus('concluida')">
-      <div class="metrica-num" id="m-concluida">–</div>
-      <div class="metrica-label">Concluídas</div>
-    </div>
-  </div>
-
   <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn ativo" onclick="mudarTab('lista')">📋 Lista</button>
@@ -410,13 +370,7 @@
 
   // ── MÉTRICAS ──────────────────────────────────────────────────────
   function atualizarMetricas() {
-    const painel = todasDemandas.filter(d => STATUSES_PAINEL.includes(d.status))
-    const cnt = s => painel.filter(d => d.status === s).length
-    document.getElementById('m-total').textContent     = painel.length
-    document.getElementById('m-aguardando').textContent= cnt('aguardando_aceite')
-    document.getElementById('m-aceita').textContent    = cnt('aceita') + cnt('aceita_com_observacao')
-    document.getElementById('m-recusada').textContent  = cnt('sem_aceite') + cnt('recusada')
-    document.getElementById('m-concluida').textContent = cnt('concluida')
+    // Métricas removidas — mantido para não quebrar chamada existente
   }
 
   // ── FILTROS ───────────────────────────────────────────────────────
