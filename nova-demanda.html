@@ -818,13 +818,16 @@
   }
 
   function baixarTemplate() {
+    // Ponto e vírgula como separador — padrão do Excel em português (pt-BR)
+    const sep = ';'
     const linhas = [
-      'cliente,skill,formato,data,duracao_minutos,modalidade,observacoes',
-      '"Empresa ABC","Comunicação e Feedback","Masterclass interativa","2026-07-10",120,"online",""',
-      '"Empresa XYZ","Inteligência Emocional e Autogestão","Skill Lab ou Mini Bootcamp","2026-07-15",240,"presencial","Foco em lideranças"',
-      '"Startup ZZZ","Mentores","Mentoring Lab","2026-07-20",60,"online","Ciclo de 4 sessões"',
+      'sep=;', // instrui o Excel a usar ; como separador ao abrir
+      ['cliente','skill','formato','data','duracao_minutos','modalidade','observacoes'].join(sep),
+      ['Empresa ABC','Comunicação e Feedback','Masterclass interativa','2026-07-10','120','online',''].join(sep),
+      ['Empresa XYZ','Inteligência Emocional e Autogestão','Skill Lab ou Mini Bootcamp','2026-07-15','240','presencial','Foco em lideranças'].join(sep),
+      ['Startup ZZZ','Mentores','Mentoring Lab','2026-07-20','60','online','Ciclo de 4 sessões'].join(sep),
     ]
-    const csv = linhas.join('\n')
+    const csv = '﻿' + linhas.join('\n') // BOM para Excel reconhecer UTF-8
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -861,21 +864,28 @@
   }
 
   function parseCSV(texto) {
-    const linhas = texto.trim().split(/\r?\n/)
-    const cabecalho = linhas[0].split(',').map(h => h.replace(/^"|"$/g, '').trim())
-    return linhas.slice(1).map((linha, idx) => {
-      // Parser simples de campos com aspas
+    // Remove BOM e a linha "sep=;" se presente
+    const semBom = texto.replace(/^﻿/, '')
+    let linhas = semBom.trim().split(/\r?\n/)
+    if (linhas[0].trim().toLowerCase().startsWith('sep=')) linhas = linhas.slice(1)
+
+    // Detecta separador: ; ou ,
+    const sep = linhas[0].includes(';') ? ';' : ','
+
+    const cabecalho = linhas[0].split(sep).map(h => h.replace(/^"|"$/g, '').trim())
+
+    return linhas.slice(1).filter(l => l.trim()).map((linha, idx) => {
       const campos = []
       let atual = ''; let dentroAspas = false
       for (let i = 0; i < linha.length; i++) {
         const c = linha[i]
         if (c === '"') { dentroAspas = !dentroAspas }
-        else if (c === ',' && !dentroAspas) { campos.push(atual.trim()); atual = '' }
+        else if (c === sep && !dentroAspas) { campos.push(atual.trim()); atual = '' }
         else { atual += c }
       }
       campos.push(atual.trim())
       const obj = {}
-      cabecalho.forEach((h, i) => obj[h] = campos[i] ?? '')
+      cabecalho.forEach((h, i) => obj[h] = (campos[i] ?? '').replace(/^"|"$/g, ''))
       obj._idx = idx
       return obj
     })
