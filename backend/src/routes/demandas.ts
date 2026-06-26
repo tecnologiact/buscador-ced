@@ -29,8 +29,19 @@ const DemandaSchema = z.object({
   horaFim:         z.string().regex(/^\d{2}:\d{2}$/, 'Formato: HH:MM').optional(),
   duracaoMinutos:  z.number().int().positive(),
   modalidade:      z.enum(['online', 'presencial', 'hibrido']),
+  idioma:          z.string().optional(),
+  publicoAlvo:     z.string().optional(),
+  localidade:      z.string().optional(),
   observacoes:     z.string().optional(),
   numSessoes:      z.number().int().positive().optional(),
+}).superRefine((data, ctx) => {
+  if ((data.modalidade === 'presencial' || data.modalidade === 'hibrido') && !data.localidade) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['localidade'],
+      message: 'Localidade obrigatória para presencial e híbrido',
+    })
+  }
 })
 
 // ----------------------------------------------------------------
@@ -88,6 +99,9 @@ demandasRouter.post('/', async (req: Request, res: Response) => {
       hora_fim:        body.horaFim    ?? null,
       duracao_minutos: body.duracaoMinutos,
       modalidade:      body.modalidade,
+      idioma:          body.idioma      ?? null,
+      publico_alvo:    body.publicoAlvo ?? null,
+      localidade:      body.localidade  ?? null,
       observacoes:     body.observacoes ?? null,
       status:          'criada',
       criado_por:      (req as any).user?.email ?? 'sistema',
@@ -199,13 +213,20 @@ demandasRouter.post('/:id/selecionar', async (req: Request, res: Response) => {
     return res.status(500).json({ erro: 'Erro ao atualizar demanda', detalhe: error.message })
   }
 
-  // Marcar consultoras selecionadas (sem enviar e-mail ainda)
+  // Marcar consultoras selecionadas (UPSERT — garante que a linha existe mesmo em dry_run)
   for (const cid of consultora_ids) {
     await supabase
       .from('sugestoes_consultoras')
-      .update({ status: 'acionada' })
-      .eq('demanda_id', req.params.id)
-      .eq('consultora_id', cid)
+      .upsert(
+        {
+          demanda_id:     req.params.id,
+          consultora_id:  cid,
+          status:         'acionada',
+          nota:           0,
+          ordem_sugerida: 1,
+        },
+        { onConflict: 'demanda_id,consultora_id' }
+      )
   }
 
   return res.json({ mensagem: 'Demanda salva no Painel com sucesso.' })

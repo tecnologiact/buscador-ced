@@ -431,7 +431,7 @@
             <input type="text" id="cliente" placeholder="Nome do cliente" required>
           </div>
           <div class="campo">
-            <label>Skill / Tema *</label>
+            <label>Temática *</label>
             <select id="skill" required>
               <option value="">Carregando temas...</option>
             </select>
@@ -455,13 +455,36 @@
           </div>
           <div class="campo">
             <label>Modalidade *</label>
-            <select id="modalidade" required>
+            <select id="modalidade" required onchange="onModalidadeChange()">
               <option value="">Selecione</option>
               <option value="online">Online</option>
               <option value="presencial">Presencial</option>
               <option value="hibrido">Híbrido</option>
             </select>
           </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label>Idioma</label>
+            <select id="idioma">
+              <option value="Português">Português</option>
+              <option value="Inglês">Inglês</option>
+              <option value="Espanhol">Espanhol</option>
+              <option value="Bilíngue PT/EN">Bilíngue PT/EN</option>
+              <option value="Bilíngue PT/ES">Bilíngue PT/ES</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Público-alvo</label>
+            <input type="text" id="publicoAlvo" placeholder="Ex: Lideranças, jovens talentos, trainees">
+          </div>
+        </div>
+
+        <div class="campo campo-condicional" id="campo-localidade">
+          <label>Localidade *</label>
+          <input type="text" id="localidade" placeholder="Ex: São Paulo – SP, Rio de Janeiro – RJ">
+          <p class="aviso-inline">📍 Obrigatório para presencial e híbrido.</p>
         </div>
 
         <div class="campo campo-condicional" id="campo-num-sessoes">
@@ -523,16 +546,17 @@
         ⬇ Baixar Modelo CSV
       </button>
 
-      <div class="csv-upload-area" id="uploadArea"
-           onclick="document.getElementById('csvFile').click()"
+      <label class="csv-upload-area" id="uploadArea"
+           for="csvFile"
            ondragover="onDragOver(event)"
            ondragleave="onDragLeave(event)"
-           ondrop="onDrop(event)">
-        <input type="file" id="csvFile" accept=".csv" onchange="onFileSelected(this)">
+           ondrop="onDrop(event)"
+           style="display:block;cursor:pointer;">
+        <input type="file" id="csvFile" accept=".csv" onchange="onFileSelected(this)" style="display:none">
         <p>📎 Clique para selecionar o CSV</p>
         <small>ou arraste o arquivo aqui</small>
         <p class="csv-nome-arquivo" id="csvNomeArquivo" style="display:none"></p>
-      </div>
+      </label>
 
       <button class="btn-primary" id="btnProcessarCSV"
               onclick="processarCSV()" type="button" disabled
@@ -560,7 +584,7 @@
                 <th style="width:36px">✓</th>
                 <th>#</th>
                 <th>Cliente</th>
-                <th>Skill</th>
+                <th>Temática</th>
                 <th>Data</th>
                 <th>Status</th>
                 <th>Consultoras encontradas</th>
@@ -659,6 +683,41 @@
     }
   }
 
+  // ── FERIADOS NACIONAIS + SP 2026 ─────────────────────────────────
+  const FERIADOS_2026 = new Set([
+    // Nacionais
+    '2026-01-01', // Ano Novo
+    '2026-02-16', // Carnaval (segunda)
+    '2026-02-17', // Carnaval (terça)
+    '2026-02-18', // Quarta de Cinzas (meio dia)
+    '2026-04-03', // Sexta-feira Santa
+    '2026-04-05', // Páscoa
+    '2026-04-21', // Tiradentes
+    '2026-05-01', // Dia do Trabalho
+    '2026-06-04', // Corpus Christi
+    '2026-09-07', // Independência
+    '2026-10-12', // Nossa Sra. Aparecida
+    '2026-11-02', // Finados
+    '2026-11-15', // Proclamação da República
+    '2026-11-20', // Consciência Negra
+    '2026-12-25', // Natal
+    // Estado de SP
+    '2026-01-25', // Aniversário de São Paulo
+    '2026-07-09', // Revolução Constitucionalista
+  ])
+
+  function validarDataUtil(val) {
+    if (!val) return 'Selecione uma data.'
+    const hoje = new Date(); hoje.setHours(0,0,0,0)
+    const [a, m, d] = val.split('-').map(Number)
+    const dt = new Date(a, m - 1, d)
+    if (dt < hoje) return 'Não é possível selecionar datas no passado.'
+    if (dt.getDay() === 0) return 'Domingos não são permitidos.'
+    if (dt.getDay() === 6) return 'Sábados não são permitidos.'
+    if (FERIADOS_2026.has(val)) return 'Esta data é feriado nacional ou estadual (SP).'
+    return null
+  }
+
   // ── FORMATO CONDICIONAL ───────────────────────────────────────────
   function onFormatoChange() {
     const isMentoring = document.getElementById('formato').value === 'Mentoring Lab'
@@ -667,11 +726,22 @@
     document.getElementById('numSessoes').required = isMentoring
   }
 
+  // ── MODALIDADE CONDICIONAL ────────────────────────────────────────
+  function onModalidadeChange() {
+    const modalidade = document.getElementById('modalidade').value
+    const needsLocal = modalidade === 'presencial' || modalidade === 'hibrido'
+    const campo = document.getElementById('campo-localidade')
+    campo.classList.toggle('visivel', needsLocal)
+    document.getElementById('localidade').required = needsLocal
+  }
+
   // ── MULTI-DATA CHIPS ─────────────────────────────────────────────
   function adicionarData() {
     const input = document.getElementById('dataInput')
     const val = input.value
     if (!val) return
+    const erro = validarDataUtil(val)
+    if (erro) { alert(erro); return }
     if (_datasAdicionadas.includes(val)) { input.value = ''; return }
     _datasAdicionadas.push(val)
     input.value = ''
@@ -725,12 +795,24 @@
     const numSessoesVal = document.getElementById('numSessoes').value
     const duracaoMinutos = DURACAO_POR_FORMATO[formato] ?? 60
 
+    const _modalidade = document.getElementById('modalidade').value
+    const _localidade = document.getElementById('localidade').value.trim()
+    if ((_modalidade === 'presencial' || _modalidade === 'hibrido') && !_localidade) {
+      alert('Informe a Localidade para modalidade presencial ou híbrido.')
+      btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+      spinner.classList.remove('ativo')
+      return
+    }
+
     const bodyBase = {
       cliente:        document.getElementById('cliente').value,
       skill:          document.getElementById('skill').value,
       formato,
       duracaoMinutos,
-      modalidade:     document.getElementById('modalidade').value,
+      modalidade:     _modalidade,
+      idioma:         document.getElementById('idioma').value || undefined,
+      publicoAlvo:    document.getElementById('publicoAlvo').value.trim() || undefined,
+      localidade:     _localidade || undefined,
       observacoes:    document.getElementById('observacoes').value || undefined,
       ...(formato === 'Mentoring Lab' && numSessoesVal
         ? { numSessoes: parseInt(numSessoesVal) } : {}),
@@ -929,10 +1011,10 @@
     const linhas = [
       'sep=;',
       // Data DEVE ser AAAA-MM-DD. Modalidade: online | presencial | hibrido
-      ['cliente','skill','formato','data (AAAA-MM-DD)','modalidade','observacoes'].join(sep),
-      ['Empresa ABC','Comunicação e Feedback','Masterclass interativa','2026-07-10','online',''].join(sep),
-      ['Empresa XYZ','Inteligência Emocional e Autogestão','Skill Lab ou Mini Bootcamp','2026-07-15','presencial','Foco em lideranças'].join(sep),
-      ['Startup ZZZ','Mentores','Mentoring Lab','2026-07-20','online','Ciclo de 4 sessões'].join(sep),
+      ['cliente','tematica','formato','data (AAAA-MM-DD)','modalidade','idioma','publico_alvo','localidade','observacoes'].join(sep),
+      ['Empresa ABC','Comunicação e Feedback','Masterclass interativa','2026-07-10','online','Português','Lideranças','',''].join(sep),
+      ['Empresa XYZ','Inteligência Emocional e Autogestão','Skill Lab ou Mini Bootcamp','2026-07-15','presencial','Português','Jovens talentos','São Paulo – SP','Foco em lideranças'].join(sep),
+      ['Startup ZZZ','Mentores','Mentoring Lab','2026-07-20','online','Inglês','Trainees','','Ciclo de 4 sessões'].join(sep),
     ]
     const csv = '﻿' + linhas.join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
@@ -1027,7 +1109,12 @@
     const file = document.getElementById('csvFile').files[0]
     if (!file) return
 
-    const texto = await file.text()
+    // Tenta UTF-8; se detectar caracteres garbled típicos de Windows-1252, relê como latin1
+    let texto = await file.text()
+    if (texto.includes('�')) {
+      const buf = await file.arrayBuffer()
+      texto = new TextDecoder('windows-1252').decode(buf)
+    }
     _csvLinhas = parseCSV(texto)
     _bulkResultados = []
     _bulkSelecionadas.clear()
@@ -1048,13 +1135,18 @@
 
       const formato = linha.formato || 'Masterclass interativa'
       const dataRaw = linha['data (AAAA-MM-DD)'] || linha.data || ''
+      const modalidadeLinha = (linha.modalidade || 'online').trim()
+      const localidadeLinha = (linha.localidade || '').trim()
       const body = {
         cliente:        linha.cliente || `Demanda ${i + 1}`,
-        skill:          linha.skill || '',
+        skill:          linha.tematica || linha.skill || '',
         formato,
         data:           normalizarData(dataRaw),
         duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? (parseInt(linha.duracao_minutos) || 60),
-        modalidade:     linha.modalidade || 'online',
+        modalidade:     modalidadeLinha || 'online',
+        idioma:         linha.idioma || undefined,
+        publicoAlvo:    linha.publico_alvo || undefined,
+        localidade:     localidadeLinha || undefined,
         observacoes:    linha.observacoes || undefined,
       }
 
@@ -1091,18 +1183,17 @@
       const temConsultoras = d.selecionadas?.length > 0
       let statusInfo
       if (d.erro) {
-        // Identifica o campo problemático para mensagem amigável
         const campos = d.detalhes?.fieldErrors ?? {}
         const campoErro = campos.data ? 'Data inválida — use AAAA-MM-DD'
           : campos.modalidade ? 'Modalidade inválida — use: online, presencial ou hibrido'
-          : campos.skill ? 'Skill obrigatória'
+          : campos.skill ? 'Temática obrigatória'
           : campos.cliente ? 'Cliente obrigatório'
           : d.erro
         statusInfo = { cls: 'pill-erro', label: `❌ ${campoErro}` }
       } else if (d.status === 'consultoras_encontradas' || d.status === 'ok') {
         statusInfo = { cls: 'pill-ok', label: `✅ ${d.selecionadas.length} encontrada(s)` }
       } else if (d.status === 'sem_consultora_elegivel') {
-        statusInfo = { cls: 'pill-erro', label: '❌ Sem consultoras para essa skill' }
+        statusInfo = { cls: 'pill-erro', label: '❌ Sem consultoras para essa temática' }
       } else {
         statusInfo = { cls: 'pill-aviso', label: '⚠️ Sem disponibilidade nessa data' }
       }
@@ -1118,8 +1209,8 @@
         </td>
         <td style="color:#aaa;font-size:12px;">${r.idx + 1}</td>
         <td><strong>${r.linha.cliente || '—'}</strong></td>
-        <td style="font-size:12px;">${r.linha.skill || '—'}</td>
-        <td style="font-size:12px;white-space:nowrap;">${r.linha.data || '—'}</td>
+        <td style="font-size:12px;">${r.linha.tematica || r.linha.skill || '—'}</td>
+        <td style="font-size:12px;white-space:nowrap;">${r.linha['data (AAAA-MM-DD)'] || r.linha.data || '—'}</td>
         <td><span class="status-pill ${statusInfo.cls}">${statusInfo.label}</span></td>
         <td style="font-size:12px;color:var(--cinza-texto);">${nomes}</td>
       </tr>`
@@ -1153,7 +1244,6 @@
       if (!r || !r.dados.selecionadas?.length) continue
 
       try {
-        // 1. Criar a demanda real no banco
         const res1 = await fetch(`${API}/demandas`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1162,7 +1252,6 @@
         const d1 = await res1.json()
         if (!d1.demanda_id) { erros++; continue }
 
-        // 2. Selecionar todas as consultoras encontradas
         const consultora_ids = r.dados.selecionadas.map(c => c.consultora_id)
         await fetch(`${API}/demandas/${d1.demanda_id}/selecionar`, {
           method: 'POST',
