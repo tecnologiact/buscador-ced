@@ -863,13 +863,17 @@
       const { data, dados } = item
       const [a, m, d] = data.split('-')
       const dataLabel = `${d}/${m}/${a}`
+      const idioma    = item.body?.idioma    ? `🌐 ${item.body.idioma}` : ''
+      const localidade = item.body?.localidade ? `📍 ${item.body.localidade}` : ''
 
       html += `<div style="margin-bottom:28px;">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-                  color:var(--cinza-texto);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+                  color:var(--cinza-texto);margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="background:var(--preto);color:white;padding:2px 10px;border-radius:20px;font-size:11px;">
             📅 ${dataLabel}
           </span>
+          ${idioma    ? `<span style="background:#e8f0fe;color:var(--azul);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;">${idioma}</span>` : ''}
+          ${localidade ? `<span style="background:#f0fdf4;color:#065f46;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;">${localidade}</span>` : ''}
         </p>`
 
       if (dados.erro) {
@@ -1265,7 +1269,7 @@
     btn.disabled = false
     if (salvos > 0) {
       document.getElementById('bulkWrapper').insertAdjacentHTML('afterend', `
-        <div class="msg-salvo" style="margin-top:16px;">
+        <div class="msg-salvo" -top:16px;">
           ✅ ${salvos} demanda${salvos !== 1 ? 's' : ''} salva${salvos !== 1 ? 's' : ''} no Painel!
           ${erros > 0 ? `(${erros} com erro)` : ''}
           <a href="painel.html" style="display:inline-block;margin-top:6px;">Ver no Painel →</a>
