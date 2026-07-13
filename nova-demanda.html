@@ -243,6 +243,42 @@
       margin-top: 4px; letter-spacing: 0.5px;
     }
 
+    /* Justificativa dentro do card */
+    .consultora-justificativa {
+      font-size: 11px; color: var(--cinza-texto);
+      margin-top: 5px; line-height: 1.5;
+      padding-top: 5px;
+      border-top: 1px solid var(--cinza-borda);
+    }
+
+    /* Card de substituto sugerido */
+    .substituto-box {
+      border: 1.5px dashed #f0ad00;
+      border-radius: 4px;
+      background: #fffdf0;
+      padding: 14px 18px;
+      margin-top: 12px;
+    }
+    .substituto-titulo {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: #b07800; margin-bottom: 10px;
+    }
+    .substituto-nome { font-size: 15px; font-weight: 700; }
+    .substituto-email { font-size: 12px; color: var(--cinza-texto); margin-top: 2px; }
+    .substituto-motivo {
+      font-size: 12px; color: #555; margin-top: 8px; line-height: 1.6;
+    }
+    .substituto-motivo strong { color: var(--preto); }
+    .motivo-detalhado {
+      font-size: 12px; color: var(--cinza-texto);
+      background: #f8f8f8;
+      border-left: 3px solid #ccc;
+      border-radius: 0 4px 4px 0;
+      padding: 8px 12px;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
     /* CAMPOS CONDICIONAIS */
     .campo-condicional { display: none; }
     .campo-condicional.visivel { display: flex; }
@@ -937,6 +973,11 @@
         const mensagem = dados.mensagem ?? dados.status ?? 'Resposta desconhecida'
         html += `<div class="msg-status ${info.cls}">${info.icone} ${mensagem}</div>`
 
+        // Motivo detalhado (quando não há resultado perfeito)
+        if (dados.motivo_detalhado) {
+          html += `<div class="motivo-detalhado">ℹ️ ${dados.motivo_detalhado}</div>`
+        }
+
         if (dados.selecionadas?.length) {
           dados.selecionadas.forEach((c, i) => {
             const key = `${c.consultora_id}::${data}`
@@ -954,6 +995,7 @@
                     <h3>${c.nome}</h3>
                     <p>${c.email}</p>
                     <p class="consultora-slots">🕐 ${slots}</p>
+                    ${c.justificativa ? `<p class="consultora-justificativa">💡 ${c.justificativa}</p>` : ''}
                   </div>
                 </div>
                 <div class="nota-badge">
@@ -962,6 +1004,24 @@
                 </div>
               </div>`
           })
+        }
+
+        // Substituto sugerido (quando não há resultado ou agenda indisponível)
+        if (dados.substituto) {
+          const sub = dados.substituto
+          const c = sub.consultora
+          const disponivel = c.disponivel
+          html += `
+            <div class="substituto-box">
+              <div class="substituto-titulo">💡 Substituta sugerida${disponivel ? ' — disponível' : ' — sem disponibilidade confirmada'}</div>
+              <div class="substituto-nome">${c.nome}</div>
+              <div class="substituto-email">${c.email} · Nota ${c.nivel} (${c.nota})</div>
+              <div class="substituto-motivo">
+                <strong>Por que não apareceu na busca:</strong> ${sub.motivo_exclusao}<br>
+                <strong>Por que sugerimos:</strong> ${sub.motivo_substituto}
+              </div>
+              ${c.justificativa ? `<div class="motivo-detalhado" style="margin-top:8px;">${c.justificativa}</div>` : ''}
+            </div>`
         }
       }
       html += `</div>`
@@ -1284,6 +1344,12 @@
       }
 
       const nomes = d.selecionadas?.map(c => c.nome).join(', ') || '—'
+      // Justificativa para linhas sem resultado
+      const justifBulk = !temConsultoras && d.motivo_detalhado
+        ? d.motivo_detalhado
+        : (!temConsultoras && d.substituto
+          ? `Sugestão: ${d.substituto.consultora.nome} (${d.substituto.consultora.nivel}) — ${d.substituto.motivo_substituto}`
+          : '')
 
       return `<tr class="${temConsultoras ? 'linha-ok' : ''}">
         <td>
@@ -1296,7 +1362,9 @@
         <td><strong>${r.linha.cliente || '—'}</strong></td>
         <td style="font-size:12px;">${r.linha.tematica || r.linha.skill || '—'}</td>
         <td style="font-size:12px;white-space:nowrap;">${r.linha['data (AAAA-MM-DD)'] || r.linha.data || '—'}</td>
-        <td><span class="status-pill ${statusInfo.cls}">${statusInfo.label}</span></td>
+        <td><span class="status-pill ${statusInfo.cls}">${statusInfo.label}</span>
+          ${justifBulk ? `<div style="font-size:11px;color:#888;margin-top:4px;max-width:280px;line-height:1.4;">${justifBulk}</div>` : ''}
+        </td>
         <td style="font-size:12px;color:var(--cinza-texto);">${nomes}</td>
       </tr>`
     }).join('')
