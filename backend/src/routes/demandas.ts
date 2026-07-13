@@ -318,11 +318,16 @@ demandasRouter.post('/:id/resposta-manual', async (req: Request, res: Response) 
     .eq('demanda_id', req.params.id)
     .eq('consultora_id', consultora_id)
 
-  // Se aceita, atualizar demanda
+  // Atualizar demanda conforme resposta
   if (resposta === 'aceita' || resposta === 'aceita_com_observacao') {
     await supabase
       .from('demandas')
       .update({ status: 'aceita', consultora_selecionada_id: consultora_id })
+      .eq('id', req.params.id)
+  } else if (resposta === 'recusada') {
+    await supabase
+      .from('demandas')
+      .update({ status: 'recusada', consultora_selecionada_id: null })
       .eq('id', req.params.id)
   }
 
