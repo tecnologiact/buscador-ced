@@ -499,6 +499,7 @@
             <input type="date" id="dataInput" style="flex:1">
             <button type="button" class="btn-secondary" onclick="adicionarData()" style="white-space:nowrap;padding:10px 16px;">+ Adicionar</button>
           </div>
+          <div id="erroData" style="display:none;margin-top:6px;padding:8px 12px;background:#fef0f0;border-left:3px solid var(--vermelho);border-radius:3px;font-size:12px;color:#991b1b;font-weight:500;"></div>
           <div id="datasChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:0;"></div>
           <p class="aviso-inline" style="margin-top:4px;">📅 Busca disponibilidade em cada data selecionada (08h–19h)</p>
         </div>
@@ -510,6 +511,8 @@
             💡 <strong>Inclua o máximo de contexto:</strong> público-alvo, quantidade de pessoas, momento/contexto da entrega, impacto esperado, resultado desejado, quantidade de sessões e duração por sessão.
           </p>
         </div>
+
+        <div id="erroFormulario" style="display:none;padding:12px 16px;background:#fef0f0;border-left:4px solid var(--vermelho);border-radius:4px;font-size:13px;color:#991b1b;font-weight:500;margin-bottom:12px;"></div>
 
         <button type="submit" class="btn-primary" id="btnBuscar">
           Consultar Disponibilidade
@@ -735,13 +738,28 @@
     document.getElementById('localidade').required = needsLocal
   }
 
+  // ── HELPERS DE ERRO INLINE ───────────────────────────────────────
+  function mostrarErroData(msg) {
+    const el = document.getElementById('erroData')
+    if (!el) return
+    el.textContent = '⚠ ' + msg
+    el.style.display = msg ? 'block' : 'none'
+  }
+  function mostrarErroFormulario(msg) {
+    const el = document.getElementById('erroFormulario')
+    if (!el) return
+    el.textContent = msg ? '⚠ ' + msg : ''
+    el.style.display = msg ? 'block' : 'none'
+  }
+
   // ── MULTI-DATA CHIPS ─────────────────────────────────────────────
   function adicionarData() {
     const input = document.getElementById('dataInput')
     const val = input.value
     if (!val) return
     const erro = validarDataUtil(val)
-    if (erro) { alert(erro); return }
+    if (erro) { mostrarErroData(erro); return }
+    mostrarErroData(null)
     if (_datasAdicionadas.includes(val)) { input.value = ''; return }
     _datasAdicionadas.push(val)
     input.value = ''
@@ -774,8 +792,9 @@
   document.getElementById('formDemanda').addEventListener('submit', async (e) => {
     e.preventDefault()
 
+    mostrarErroFormulario(null)
     if (_datasAdicionadas.length === 0) {
-      alert('Adicione ao menos uma data antes de consultar.')
+      mostrarErroFormulario('Adicione ao menos uma data antes de consultar.')
       return
     }
 
@@ -797,10 +816,45 @@
 
     const _modalidade = document.getElementById('modalidade').value
     const _localidade = document.getElementById('localidade').value.trim()
-    if ((_modalidade === 'presencial' || _modalidade === 'hibrido') && !_localidade) {
-      alert('Informe a Localidade para modalidade presencial ou híbrido.')
+
+    // Validações manuais (Cenários 6/7/8) — mensagens padronizadas inline
+    const clienteVal = document.getElementById('cliente').value.trim()
+    const skillVal   = document.getElementById('skill').value
+    const formatoVal = document.getElementById('formato').value
+
+    if (!clienteVal) {
+      mostrarErroFormulario('O campo "Cliente" é obrigatório.')
       btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
       spinner.classList.remove('ativo')
+      document.getElementById('cliente').focus()
+      return
+    }
+    if (!skillVal) {
+      mostrarErroFormulario('Selecione uma "Temática" antes de consultar.')
+      btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+      spinner.classList.remove('ativo')
+      document.getElementById('skill').focus()
+      return
+    }
+    if (!formatoVal) {
+      mostrarErroFormulario('Selecione um "Formato" antes de consultar.')
+      btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+      spinner.classList.remove('ativo')
+      document.getElementById('formato').focus()
+      return
+    }
+    if (!_modalidade) {
+      mostrarErroFormulario('Selecione uma "Modalidade" antes de consultar.')
+      btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+      spinner.classList.remove('ativo')
+      document.getElementById('modalidade').focus()
+      return
+    }
+    if ((_modalidade === 'presencial' || _modalidade === 'hibrido') && !_localidade) {
+      mostrarErroFormulario('Informe a "Localidade" para modalidade presencial ou híbrido.')
+      btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+      spinner.classList.remove('ativo')
+      document.getElementById('localidade').focus()
       return
     }
 
@@ -1139,13 +1193,36 @@
 
       const formato = linha.formato || 'Masterclass interativa'
       const dataRaw = linha['data (AAAA-MM-DD)'] || linha.data || ''
-      const modalidadeLinha = (linha.modalidade || 'online').trim()
+      const dataNorm = normalizarData(dataRaw)
+      const modalidadeLinha = (linha.modalidade || '').trim().toLowerCase()
       const localidadeLinha = (linha.localidade || '').trim()
+
+      // ── VALIDAÇÕES LOCAIS (Cenários 19, 20, 25) ──────────────────
+      let erroLocal = null
+
+      // Cenário 25: modalidade em branco
+      if (!modalidadeLinha) {
+        erroLocal = 'Modalidade obrigatória — use: online, presencial ou hibrido'
+      }
+      // Modalidade inválida
+      else if (!['online', 'presencial', 'hibrido'].includes(modalidadeLinha)) {
+        erroLocal = `Modalidade inválida "${linha.modalidade}" — use: online, presencial ou hibrido`
+      }
+      // Cenário 19: validação de data (feriados, fins de semana, passado)
+      if (!erroLocal) {
+        const erroData = validarDataUtil(dataNorm)
+        if (erroData) erroLocal = erroData
+      }
+      // Cenário 20: localidade obrigatória para presencial/híbrido
+      if (!erroLocal && (modalidadeLinha === 'presencial' || modalidadeLinha === 'hibrido') && !localidadeLinha) {
+        erroLocal = 'Localidade obrigatória para modalidade presencial ou híbrido'
+      }
+
       const body = {
         cliente:        linha.cliente || `Demanda ${i + 1}`,
         skill:          linha.tematica || linha.skill || '',
         formato,
-        data:           normalizarData(dataRaw),
+        data:           dataNorm,
         duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? (parseInt(linha.duracao_minutos) || 60),
         modalidade:     modalidadeLinha || 'online',
         idioma:         linha.idioma || undefined,
@@ -1155,16 +1232,20 @@
       }
 
       let resultado = null
-      try {
-        // dry_run=true — só consulta, não grava no banco ainda
-        const res = await fetch(`${API}/demandas?dry_run=true`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        })
-        resultado = await res.json()
-      } catch {
-        resultado = { erro: 'Erro de conexão' }
+      if (erroLocal) {
+        resultado = { erro: erroLocal }
+      } else {
+        try {
+          // dry_run=true — só consulta, não grava no banco ainda
+          const res = await fetch(`${API}/demandas?dry_run=true`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          })
+          resultado = await res.json()
+        } catch {
+          resultado = { erro: 'Erro de conexão' }
+        }
       }
       _bulkResultados.push({ idx: i, linha, body, dados: resultado })
     }

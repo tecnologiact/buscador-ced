@@ -65,6 +65,8 @@ demandasRouter.post('/', async (req: Request, res: Response) => {
       horaFim:        body.horaFim    ?? '19:00',
       duracaoMinutos: body.duracaoMinutos,
       modalidade:     body.modalidade,
+      idioma:         body.idioma,
+      publicoAlvo:    body.publicoAlvo,
     })
     const novoStatus = matching.status === 'ok'
       ? 'consultoras_encontradas'
@@ -121,6 +123,8 @@ demandasRouter.post('/', async (req: Request, res: Response) => {
     horaFim:        body.horaFim    ?? '19:00',
     duracaoMinutos: body.duracaoMinutos,
     modalidade:     body.modalidade,
+    idioma:         body.idioma,
+    publicoAlvo:    body.publicoAlvo,
   })
 
   // 4. Atualizar status da demanda

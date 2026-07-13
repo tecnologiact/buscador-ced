@@ -45,6 +45,41 @@ function notaParaNivel(nota: number): string {
   return mapa[nota] ?? String(nota)
 }
 
+// Mapeia texto livre de público-alvo para tags padronizadas de consultoras
+function mapearPublicoAlvo(publicoAlvo: string): string[] {
+  const s = publicoAlvo.toLowerCase()
+  const tags: string[] = []
+  if (s.includes('estagiár') || s.includes('estagi')) tags.push('Estagiário')
+  if (s.includes('trainee') || s.includes('trainées')) tags.push('Trainee')
+  if (s.includes('jovem') || s.includes('jovens') || s.includes('jovem talent') || s.includes('jovens talent')) {
+    tags.push('Estagiário', 'Trainee')
+  }
+  if (s.includes('primeir') && s.includes('lider')) tags.push('Primeira liderança')
+  if ((s.includes('média') || s.includes('media') || s.includes('mid')) && s.includes('lider')) {
+    tags.push('Média liderança')
+  }
+  if (s.includes('alta') || s.includes('c-level') || s.includes('clevel') || s.includes('diret') || s.includes('executiv')) {
+    tags.push('Alta liderança / C-Level')
+  }
+  if (s.includes('especialista') || s.includes('técnic') || s.includes('tecnic')) tags.push('Especialistas técnicos')
+  // Genérico "liderança" sem especificar nível → todos os níveis de liderança
+  if (s.includes('lideranç') && !s.includes('primeir') && !s.includes('média') && !s.includes('alta')) {
+    tags.push('Primeira liderança', 'Média liderança', 'Alta liderança / C-Level')
+  }
+  return [...new Set(tags)]
+}
+
+// Verifica se o idioma da consultora é compatível com o idioma exigido
+function idiomaCompativel(idiomaConsultora: string, idiomaDemanda: string): boolean {
+  if (!idiomaDemanda || idiomaDemanda === 'Português') return true
+  const c = idiomaConsultora ?? 'Português'
+  if (idiomaDemanda === 'Inglês')          return c === 'Inglês' || c === 'Bilíngue PT/EN'
+  if (idiomaDemanda === 'Espanhol')        return c === 'Espanhol' || c === 'Bilíngue PT/ES'
+  if (idiomaDemanda === 'Bilíngue PT/EN')  return c === 'Inglês' || c === 'Bilíngue PT/EN'
+  if (idiomaDemanda === 'Bilíngue PT/ES')  return c === 'Espanhol' || c === 'Bilíngue PT/ES'
+  return true
+}
+
 export async function executarMatching(params: {
   skillNome: string
   data: string
@@ -52,8 +87,10 @@ export async function executarMatching(params: {
   horaFim: string
   duracaoMinutos: number
   modalidade: string
+  idioma?: string
+  publicoAlvo?: string
 }): Promise<ResultadoMatching> {
-  const { skillNome, data, horaInicio, horaFim, duracaoMinutos, modalidade } = params
+  const { skillNome, data, horaInicio, horaFim, duracaoMinutos, modalidade, idioma, publicoAlvo } = params
 
   // ----------------------------------------------------------------
   // 1. Buscar skill pelo nome
@@ -86,7 +123,9 @@ export async function executarMatching(params: {
         nome,
         email,
         ativo,
-        modalidade
+        modalidade,
+        idioma,
+        publicos
       )
     `)
     .eq('skill_id', skill.id)
@@ -107,19 +146,40 @@ export async function executarMatching(params: {
   const elegíveisBase = (pares ?? []).filter((p: any) => p.consultoras?.ativo === true)
 
   // Filtrar por modalidade se for presencial
-  const elegíveisFiltrados = elegíveisBase.filter((p: any) => {
+  const elegíveisPorModalidade = elegíveisBase.filter((p: any) => {
     if (modalidade === 'online') return true
     if (modalidade === 'presencial' || modalidade === 'hibrido') {
-      // Consultoras que só fazem online não podem para presencial
       return p.consultoras?.modalidade !== 'Online'
     }
     return true
   })
 
+  // Filtrar por idioma (hard filter — idioma incompatível exclui a consultora)
+  const elegíveisPorIdioma = elegíveisPorModalidade.filter((p: any) => {
+    return idiomaCompativel(p.consultoras?.idioma ?? 'Português', idioma ?? '')
+  })
+
+  // Filtrar por público-alvo (soft filter — se nenhuma consultora bate, usa todas)
+  let elegíveisFiltrados = elegíveisPorIdioma
+  if (publicoAlvo && publicoAlvo.trim().length > 0) {
+    const tags = mapearPublicoAlvo(publicoAlvo)
+    if (tags.length > 0) {
+      const porPublico = elegíveisPorIdioma.filter((p: any) => {
+        const publs: string = p.consultoras?.publicos ?? ''
+        return tags.some(tag => publs.includes(tag))
+      })
+      // Usa filtro só se há pelo menos 1 resultado; senão mantém sem filtro
+      if (porPublico.length > 0) elegíveisFiltrados = porPublico
+    }
+  }
+
   if (elegíveisFiltrados.length === 0) {
+    const motivo = idioma && idioma !== 'Português'
+      ? `Nenhuma consultora com nota suficiente em "${skillNome}" atende ao idioma "${idioma}".`
+      : `Nenhuma consultora possui nota suficiente em "${skillNome}" — isso vale para qualquer data. É necessário mapear novas consultoras para essa skill.`
     return {
       status: 'sem_consultora_elegivel',
-      mensagem: `Nenhuma consultora possui nota suficiente em "${skillNome}" — isso vale para qualquer data. É necessário mapear novas consultoras para essa skill.`,
+      mensagem: motivo,
       elegíveis: [],
       selecionadas: [],
     }

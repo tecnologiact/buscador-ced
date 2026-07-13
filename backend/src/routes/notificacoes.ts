@@ -143,7 +143,7 @@ notificacoesRouter.post('/:id/responder', async (req: Request, res: Response) =>
 
   // Reutiliza a lógica do GET passando a observação
   req.query = { token, resposta: 'aceita_com_observacao', observacao }
-  return notificacoesRouter.handle(req, res, () => {})
+  return (notificacoesRouter as any).handle(req, res, () => {})
 })
 
 // ----------------------------------------------------------------
