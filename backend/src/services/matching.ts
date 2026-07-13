@@ -24,6 +24,7 @@ export interface ConsultoraElegivel {
   slotsLivres: { inicio: string; fim: string }[]
   motivo?: string
   justificativa?: string  // explicação de por que foi selecionada (ou não disponível)
+  historico_entregas?: number  // total de demandas aceitas nessa skill
 }
 
 export interface SubstitutoSugerido {
@@ -408,6 +409,44 @@ export async function executarMatching(params: {
       motivo:        disp?.erro,
     }
     return base
+  })
+
+  // ----------------------------------------------------------------
+  // C14: Buscar histórico de entregas aceitas por consultora nessa skill
+  // ----------------------------------------------------------------
+  const todosIds = elegíveisCompletos.map(c => c.consultora_id)
+  const historicoMap = new Map<string, number>()
+  try {
+    const { data: historicoRows } = await supabase
+      .from('sugestoes_consultoras')
+      .select('consultora_id, demanda_id')
+      .in('consultora_id', todosIds)
+      .eq('resposta', 'aceita')
+      // filtra demandas que tenham a mesma skill
+      .not('demanda_id', 'is', null)
+
+    // Para filtrar por skill_id, fazemos join in-memory (evita query complexa)
+    if (historicoRows && historicoRows.length > 0) {
+      const demandaIds = [...new Set(historicoRows.map((r: any) => r.demanda_id))]
+      const { data: demandasComSkill } = await supabase
+        .from('demandas')
+        .select('id')
+        .in('id', demandaIds)
+        .eq('skill_id', skill.id)
+      const demandaIdsComSkill = new Set((demandasComSkill ?? []).map((d: any) => d.id))
+      historicoRows.forEach((r: any) => {
+        if (demandaIdsComSkill.has(r.demanda_id)) {
+          historicoMap.set(r.consultora_id, (historicoMap.get(r.consultora_id) ?? 0) + 1)
+        }
+      })
+    }
+  } catch (e) {
+    console.warn('[Matching] Não foi possível carregar histórico de entregas:', e)
+  }
+
+  // Enriquecer elegíveisCompletos com historico_entregas
+  elegíveisCompletos.forEach(c => {
+    c.historico_entregas = historicoMap.get(c.consultora_id) ?? 0
   })
 
   // Selecionar até 3 disponíveis (já ordenadas por nota DESC pelo Supabase)

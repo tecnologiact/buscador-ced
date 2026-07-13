@@ -468,7 +468,7 @@
           </div>
           <div class="campo">
             <label>Temática *</label>
-            <select id="skill" required>
+            <select id="skill">
               <option value="">Carregando temas...</option>
             </select>
           </div>
@@ -477,7 +477,7 @@
         <div class="grid-2">
           <div class="campo">
             <label>Formato *</label>
-            <select id="formato" required onchange="onFormatoChange()">
+            <select id="formato" onchange="onFormatoChange()">
               <option value="">Selecione</option>
               <option value="Masterclass interativa">Masterclass interativa · até 2h</option>
               <option value="Skill Lab ou Mini Bootcamp">Skill Lab ou Mini Bootcamp · 2h–4h</option>
@@ -491,7 +491,7 @@
           </div>
           <div class="campo">
             <label>Modalidade *</label>
-            <select id="modalidade" required onchange="onModalidadeChange()">
+            <select id="modalidade" onchange="onModalidadeChange()">
               <option value="">Selecione</option>
               <option value="online">Online</option>
               <option value="presencial">Presencial</option>
@@ -774,6 +774,16 @@
     document.getElementById('localidade').required = needsLocal
   }
 
+  // ── VALIDAÇÃO DE LOCALIDADE (C13/C20) ────────────────────────────
+  const LOCALIDADE_INVALIDA = /^(a definir|tbd|tba|n\/a|na|x+|teste?s?|qualquer|nenhum|outro|indefinido|marte|lua|moon|mars|não sei|nao sei|em branco|branco|-)$/i
+  function validarLocalidade(val) {
+    if (!val || val.trim().length < 3) return 'Informe uma cidade válida (ex: São Paulo – SP).'
+    const s = val.trim()
+    if (LOCALIDADE_INVALIDA.test(s)) return 'Localidade inválida. Informe uma cidade real (ex: São Paulo – SP).'
+    if (!/[a-záàãâäéèêëíìîïóòõôöúùûüç]/i.test(s)) return 'Informe uma cidade válida (ex: São Paulo – SP).'
+    return null
+  }
+
   // ── HELPERS DE ERRO INLINE ───────────────────────────────────────
   function mostrarErroData(msg) {
     const el = document.getElementById('erroData')
@@ -822,6 +832,33 @@
           style="background:none;border:none;color:white;cursor:pointer;font-size:14px;line-height:1;padding:0;margin-left:2px;">×</button>
       </span>`
     }).join('')
+  }
+
+  // ── PARSER DE OBSERVAÇÕES (C3) ───────────────────────────────────
+  // Extrai idioma e público-alvo a partir do campo livre de observações.
+  // Retorna { idioma?, publicoAlvo? } — só preenche o que detectar.
+  function extrairDaObservacoes(texto) {
+    if (!texto || !texto.trim()) return {}
+    const s = texto.toLowerCase()
+    const resultado = {}
+
+    // Idioma
+    if (/ingl[eê]s|english|em ingl|idioma ingl/.test(s))         resultado.idioma = 'Inglês'
+    else if (/espanh[oó]l|spanish|em espanh|idioma espanh/.test(s)) resultado.idioma = 'Espanhol'
+    else if (/bil[ií]ngue.*(en|ingl)|bil[ií]ngue pt.*en/.test(s))   resultado.idioma = 'Bilíngue PT/EN'
+    else if (/bil[ií]ngue.*(es|espanh)|bil[ií]ngue pt.*es/.test(s)) resultado.idioma = 'Bilíngue PT/ES'
+
+    // Público-alvo
+    const publicos = []
+    if (/estagi[áa]ri[oa]|jovem.*talent|jovens.*talent/.test(s))   publicos.push('Estagiário')
+    if (/\btrainee|trainees|trainées/.test(s))                      publicos.push('Trainee')
+    if (/primeir.*lider|1[aªo].*lider|gest[oó]r.*primeir/.test(s)) publicos.push('Primeira liderança')
+    if (/m[eé]dia.*lider|lider.*m[eé]dia|gest[oó]r.*m[eé]di/.test(s)) publicos.push('Média liderança')
+    if (/alta.*lider|c[-\s]?level|diretor|vice[-\s]?president|executiv/.test(s)) publicos.push('Alta liderança')
+    if (/especialista|t[eé]cnic/.test(s))                          publicos.push('Especialistas técnicos')
+    if (publicos.length > 0) resultado.publicoAlvo = publicos.join(', ')
+
+    return resultado
   }
 
   // ── SUBMIT BUSCA INDIVIDUAL ───────────────────────────────────────
@@ -893,6 +930,34 @@
       document.getElementById('localidade').focus()
       return
     }
+    if ((_modalidade === 'presencial' || _modalidade === 'hibrido') && _localidade) {
+      const erroLocal = validarLocalidade(_localidade)
+      if (erroLocal) {
+        mostrarErroFormulario(erroLocal)
+        btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
+        spinner.classList.remove('ativo')
+        document.getElementById('localidade').focus()
+        return
+      }
+    }
+
+    // C3: extrair idioma/público das observações quando os campos estão no padrão
+    const obsText    = document.getElementById('observacoes').value || ''
+    const idiomaForm = document.getElementById('idioma').value || 'Português'
+    const pubForm    = document.getElementById('publicoAlvo').value.trim()
+    const extraObs   = extrairDaObservacoes(obsText)
+
+    // Usa o valor do formulário como primário; observações preenchem só o que estiver em branco
+    const idiomaFinal   = idiomaForm !== 'Português' ? idiomaForm : (extraObs.idioma || idiomaForm)
+    const publicoFinal  = pubForm || extraObs.publicoAlvo || ''
+
+    // Se observações detectaram algo diferente do formulário, mostra aviso
+    if (extraObs.idioma && idiomaForm === 'Português' && extraObs.idioma !== 'Português') {
+      mostrarErroFormulario(null)
+      const aviso = document.getElementById('erroFormulario')
+      aviso.style.cssText = 'display:block;padding:12px 16px;background:#e8f0fe;border-left:4px solid #004fce;border-radius:4px;font-size:13px;color:#004fce;font-weight:500;margin-bottom:12px;'
+      aviso.textContent = `💡 Detectado idioma "${extraObs.idioma}" nas observações — busca ajustada automaticamente.`
+    }
 
     const bodyBase = {
       cliente:        document.getElementById('cliente').value,
@@ -900,10 +965,10 @@
       formato,
       duracaoMinutos,
       modalidade:     _modalidade,
-      idioma:         document.getElementById('idioma').value || undefined,
-      publicoAlvo:    document.getElementById('publicoAlvo').value.trim() || undefined,
+      idioma:         idiomaFinal,
+      publicoAlvo:    publicoFinal || undefined,
       localidade:     _localidade || undefined,
-      observacoes:    document.getElementById('observacoes').value || undefined,
+      observacoes:    obsText || undefined,
       ...(formato === 'Mentoring Lab' && numSessoesVal
         ? { numSessoes: parseInt(numSessoesVal) } : {}),
     }
@@ -995,6 +1060,12 @@
                     <h3>${c.nome}</h3>
                     <p>${c.email}</p>
                     <p class="consultora-slots">🕐 ${slots}</p>
+                    ${typeof c.historico_entregas === 'number'
+                      ? `<p style="font-size:11px;color:${c.historico_entregas > 0 ? 'var(--verde)' : '#aaa'};margin-top:3px;font-weight:600;">
+                          ${c.historico_entregas > 0
+                            ? `✔ ${c.historico_entregas} entrega${c.historico_entregas !== 1 ? 's' : ''} anterior${c.historico_entregas !== 1 ? 'es' : ''} nesta temática`
+                            : '○ Sem histórico nesta temática'}</p>`
+                      : ''}
                     ${c.justificativa ? `<p class="consultora-justificativa">💡 ${c.justificativa}</p>` : ''}
                   </div>
                 </div>
@@ -1273,9 +1344,14 @@
         const erroData = validarDataUtil(dataNorm)
         if (erroData) erroLocal = erroData
       }
-      // Cenário 20: localidade obrigatória para presencial/híbrido
-      if (!erroLocal && (modalidadeLinha === 'presencial' || modalidadeLinha === 'hibrido') && !localidadeLinha) {
-        erroLocal = 'Localidade obrigatória para modalidade presencial ou híbrido'
+      // Cenário 20: localidade obrigatória e válida para presencial/híbrido
+      if (!erroLocal && (modalidadeLinha === 'presencial' || modalidadeLinha === 'hibrido')) {
+        if (!localidadeLinha) {
+          erroLocal = 'Localidade obrigatória para modalidade presencial ou híbrido'
+        } else {
+          const erroLoc = validarLocalidade(localidadeLinha)
+          if (erroLoc) erroLocal = erroLoc
+        }
       }
 
       const body = {
@@ -1285,7 +1361,7 @@
         data:           dataNorm,
         duracaoMinutos: DURACAO_POR_FORMATO[formato] ?? (parseInt(linha.duracao_minutos) || 60),
         modalidade:     modalidadeLinha || 'online',
-        idioma:         linha.idioma || undefined,
+        idioma:         linha.idioma || 'Português',
         publicoAlvo:    linha.publico_alvo || undefined,
         localidade:     localidadeLinha || undefined,
         observacoes:    linha.observacoes || undefined,

@@ -636,11 +636,14 @@
         ${d.observacoes ? `<div class="modal-campo" style="grid-column:1/-1"><label>Observações</label><p>${d.observacoes}</p></div>` : ''}
       </div>`
 
-    // Consultoras selecionadas com ações
-    const selecionadas = sugestoes.filter(s => s.status_sugestao === 'acionada' || s.status_sugestao === 'aceita' || s.status_sugestao === 'recusada')
-    if (selecionadas.length > 0) {
-      html += `<div class="modal-secao"><div class="modal-secao-titulo">Consultoras selecionadas</div>`
-      selecionadas.forEach((c, i) => {
+    // C18: Mostrar TODAS as sugestões — acionadas primeiro, depois pendentes
+    const acionadas = sugestoes.filter(s => s.status_sugestao === 'acionada' || s.status_sugestao === 'aceita' || s.status_sugestao === 'recusada')
+    const pendentes = sugestoes.filter(s => !acionadas.includes(s))
+    const todasOrdenadas = [...acionadas, ...pendentes]
+
+    if (todasOrdenadas.length > 0) {
+      html += `<div class="modal-secao"><div class="modal-secao-titulo">Consultoras sugeridas (${todasOrdenadas.length})</div>`
+      todasOrdenadas.forEach((c, i) => {
         const nota  = Math.min(c.nota, 3)
         const nome  = c.consultora || c.consultoras?.nome || c.consultora_id
         const email = c.email || c.consultoras?.email || ''
@@ -651,13 +654,21 @@
           : ''
         const emailEnviado = c.status_notificacao != null
         const respondido   = c.resposta != null
+        const isPendente   = pendentes.includes(c)
         const cid = c.consultora_id
 
-        html += `<div class="cons-row" id="cons-row-${cid}">
+        // Badge de status da sugestão
+        const statusBadge = isPendente
+          ? `<span style="display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;
+                letter-spacing:0.5px;background:#f0f0f0;color:#888;padding:2px 8px;border-radius:20px;
+                margin-left:8px;">Sugerida</span>`
+          : ''
+
+        html += `<div class="cons-row" id="cons-row-${cid}" style="${isPendente ? 'opacity:0.8;border-top:1px dashed #e0e0e0;' : ''}">
           <div class="cons-row-top">
             <div class="cons-ordem">${i + 1}</div>
             <div class="cons-info">
-              <div class="cons-nome">${nome}</div>
+              <div class="cons-nome">${nome}${statusBadge}</div>
               <div class="cons-email">${email}</div>
               ${slots ? `<div class="cons-slots">🕐 ${slots}</div>` : ''}
             </div>
