@@ -118,26 +118,30 @@ export async function consultarDisponibilidade(
   duracaoMinutos: number,
   _organizadorEmail: string
 ): Promise<DisponibilidadeConsultora[]> {
-  const startDateTime = `${data}T${horaInicio}:00`
-  const endDateTime   = `${data}T${horaFim}:00`
+  // Inclui offset BRT (-03:00) para o Graph não interpretar como UTC
+  const startDateTime = `${data}T${horaInicio}:00-03:00`
+  const endDateTime   = `${data}T${horaFim}:00-03:00`
 
   const graph = getGraphClient()
 
   const resultados = await Promise.all(
     emails.map(async (email): Promise<DisponibilidadeConsultora> => {
       try {
+        // NÃO usar encodeURIComponent — o Graph SDK faz o encode internamente.
+        // encodeURIComponent('@' → '%40') + SDK re-encode = '%2540' → erro 404.
         const response = await graph
-          .api(`/users/${encodeURIComponent(email)}/calendarView`)
+          .api(`/users/${email}/calendarView`)
           .header('Prefer', 'outlook.timezone="America/Sao_Paulo"')
           .query({
             startDateTime,
             endDateTime,
             $select: 'start,end,showAs,isCancelled,isAllDay',
-            $top: 50,
+            $top: 100,
           })
           .get()
 
         const eventos: any[] = response.value ?? []
+        console.log(`[Graph] ${email}: ${eventos.length} evento(s) na janela ${horaInicio}-${horaFim}`)
 
         // Considera ocupado apenas eventos não cancelados e não marcados como livre
         const ocupados = eventos
@@ -157,6 +161,7 @@ export async function consultarDisponibilidade(
           })
 
         const slots = calcularSlotsLivres(ocupados, horaInicio, horaFim, duracaoMinutos)
+        console.log(`[Graph] ${email}: ${slots.length} slot(s) livre(s) — ocupados: ${JSON.stringify(ocupados)}`)
 
         return {
           email,
