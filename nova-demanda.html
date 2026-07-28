@@ -1143,6 +1143,9 @@
                             ? `✔ ${c.historico_entregas} entrega${c.historico_entregas !== 1 ? 's' : ''} anterior${c.historico_entregas !== 1 ? 'es' : ''} nesta temática`
                             : '○ Sem histórico nesta temática'}</p>`
                       : ''}
+                    ${c.certificacoes ? `<p style="font-size:10px;color:#555;margin-top:4px;">🏅 ${c.certificacoes.split(';').filter(Boolean).join(' · ')}</p>` : ''}
+                    ${c.teamscape ? `<p style="font-size:10px;color:#7c3aed;margin-top:2px;">📊 TeamScape: ${c.teamscape}</p>` : ''}
+                    ${c.idiomas && c.idiomas !== 'Português' ? `<p style="font-size:10px;color:var(--azul);margin-top:2px;">🌐 ${c.idiomas.split(';').filter(Boolean).join(' · ')}</p>` : ''}
                     ${c.justificativa ? `<p class="consultora-justificativa">💡 ${c.justificativa}</p>` : ''}
                   </div>
                 </div>

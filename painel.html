@@ -677,6 +677,9 @@
               <div class="cons-nome">${nome}${statusBadge}</div>
               <div class="cons-email">${email}</div>
               ${slots ? `<div class="cons-slots">🕐 ${slots}</div>` : ''}
+              ${(c.consultoras?.certificacoes || c.certificacoes) ? `<div style="font-size:10px;color:#555;margin-top:3px;">🏅 ${(c.consultoras?.certificacoes || c.certificacoes).split(';').filter(Boolean).join(' · ')}</div>` : ''}
+              ${(c.consultoras?.teamscape || c.teamscape) ? `<div style="font-size:10px;color:#7c3aed;margin-top:2px;">📊 TeamScape: ${c.consultoras?.teamscape || c.teamscape}</div>` : ''}
+              ${(c.consultoras?.idioma || c.idiomas) && (c.consultoras?.idioma || c.idiomas) !== 'Português' ? `<div style="font-size:10px;color:var(--azul);margin-top:2px;">🌐 ${(c.consultoras?.idioma || c.idiomas).split(';').filter(Boolean).join(' · ')}</div>` : ''}
             </div>
             <div class="cons-nota cons-nota-${nota}">${c.nota}</div>
           </div>

@@ -23,8 +23,11 @@ export interface ConsultoraElegivel {
   disponivel: boolean
   slotsLivres: { inicio: string; fim: string }[]
   motivo?: string
-  justificativa?: string  // explicação de por que foi selecionada (ou não disponível)
-  historico_entregas?: number  // total de demandas aceitas nessa skill
+  justificativa?: string
+  historico_entregas?: number
+  certificacoes?: string   // ex: 'FACET5;Coaching;PMI'
+  teamscape?: string       // ex: 'Aprendiz (fiz apenas 1 vez)'
+  idiomas?: string         // ex: 'Português;Inglês'
 }
 
 export interface SubstitutoSugerido {
@@ -113,14 +116,16 @@ function mapearPublicoAlvo(publicoAlvo: string): string[] {
   return [...new Set(tags)]
 }
 
-// Verifica se o idioma da consultora é compatível com o idioma exigido
+// Verifica se o idioma da consultora é compatível com o idioma exigido.
+// idiomaConsultora pode ser multi-valor separado por ';' (ex: 'Português;Inglês')
 function idiomaCompativel(idiomaConsultora: string, idiomaDemanda: string): boolean {
   if (!idiomaDemanda || idiomaDemanda === 'Português') return true
-  const c = idiomaConsultora ?? 'Português'
-  if (idiomaDemanda === 'Inglês')          return c === 'Inglês' || c === 'Bilíngue PT/EN'
-  if (idiomaDemanda === 'Espanhol')        return c === 'Espanhol' || c === 'Bilíngue PT/ES'
-  if (idiomaDemanda === 'Bilíngue PT/EN')  return c === 'Inglês' || c === 'Bilíngue PT/EN'
-  if (idiomaDemanda === 'Bilíngue PT/ES')  return c === 'Espanhol' || c === 'Bilíngue PT/ES'
+  // Separa múltiplos idiomas da consultora
+  const idiomas = (idiomaConsultora ?? 'Português').split(';').map(s => s.trim()).filter(Boolean)
+  if (idiomaDemanda === 'Inglês')         return idiomas.some(i => i === 'Inglês' || i === 'Bilíngue PT/EN')
+  if (idiomaDemanda === 'Espanhol')       return idiomas.some(i => i === 'Espanhol' || i === 'Bilíngue PT/ES')
+  if (idiomaDemanda === 'Bilíngue PT/EN') return idiomas.some(i => i === 'Inglês' || i === 'Bilíngue PT/EN')
+  if (idiomaDemanda === 'Bilíngue PT/ES') return idiomas.some(i => i === 'Espanhol' || i === 'Bilíngue PT/ES')
   return true
 }
 
@@ -219,7 +224,9 @@ export async function executarMatching(params: {
         ativo,
         modalidade,
         idioma,
-        publicos
+        publicos,
+        certificacoes,
+        teamscape
       )
     `)
     .eq('skill_id', skill.id)
@@ -401,14 +408,17 @@ export async function executarMatching(params: {
     const disp = mapDisponibilidade.get(c.email)
     const disponivel = disp?.disponivel ?? false
     const base: ConsultoraElegivel = {
-      consultora_id: c.id,
-      nome:          c.nome,
-      email:         c.email,
-      nota:          p.nota,
-      nivel:         notaParaNivel(p.nota),
+      consultora_id:  c.id,
+      nome:           c.nome,
+      email:          c.email,
+      nota:           p.nota,
+      nivel:          notaParaNivel(p.nota),
       disponivel,
-      slotsLivres:   disp?.slotsLivres ?? [],
-      motivo:        disp?.erro,
+      slotsLivres:    disp?.slotsLivres ?? [],
+      motivo:         disp?.erro,
+      certificacoes:  c.certificacoes ?? undefined,
+      teamscape:      c.teamscape ?? undefined,
+      idiomas:        c.idioma ?? undefined,
     }
     return base
   })
