@@ -37,7 +37,7 @@ export async function enviarEmailAcionamento(
   dados: DadosNotificacao,
   emailRemetente: string
 ): Promise<void> {
-  const baseUrl = process.env.APP_BASE_URL ?? 'http://localhost:3000'
+  const baseUrl = process.env.APP_BASE_URL ?? 'https://buscador-ced.vercel.app'
 
   const linkAceite      = `${baseUrl}/api/notificacoes/${dados.notificacaoId}/responder?token=${dados.tokenAceite}&resposta=aceita`
   const linkRecusa      = `${baseUrl}/api/notificacoes/${dados.notificacaoId}/responder?token=${dados.tokenRecusa}&resposta=recusada`
@@ -68,7 +68,11 @@ export async function enviarEmailAcionamento(
         </tr>
         <tr style="background: #f5f5f5;">
           <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Horário</td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${dados.horaInicio} às ${dados.horaFim} (${dados.duracaoMinutos} min)</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${
+            dados.horaInicio && dados.horaFim
+              ? `${dados.horaInicio} às ${dados.horaFim} (${dados.duracaoMinutos} min)`
+              : `A definir (${dados.duracaoMinutos} min)`
+          }</td>
         </tr>
         <tr>
           <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Modalidade</td>
