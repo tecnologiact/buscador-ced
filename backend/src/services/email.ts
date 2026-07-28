@@ -95,13 +95,8 @@ export async function enviarEmailAcionamento(
         </a>
         <a href="${linkRecusa}"
            style="background: #ef4444; color: white; padding: 12px 24px; text-decoration: none;
-                  border-radius: 6px; margin-right: 10px; display: inline-block;">
-          ❌ Não aceito
-        </a>
-        <a href="${linkObservacao}"
-           style="background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none;
                   border-radius: 6px; display: inline-block;">
-          💬 Aceito com observação
+          ❌ Não aceito
         </a>
       </div>
 
