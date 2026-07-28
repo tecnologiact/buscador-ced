@@ -109,12 +109,12 @@
     .spinner p { font-size: 13px; color: var(--cinza-texto); }
 
     /* PAGINAÇÃO */
-    .paginacao { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid var(--cinza-borda); background: var(--branco); font-size: 12px; color: var(--cinza-texto); }
-    .paginacao-btns { display: flex; gap: 4px; }
-    .btn-pag { border: 1px solid var(--cinza-borda); background: white; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: 'Roboto', Arial, sans-serif; transition: all 0.15s; }
-    .btn-pag:hover:not(:disabled) { border-color: var(--vermelho); color: var(--vermelho); }
+    .paginacao { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-top: 2px solid var(--cinza-borda); background: var(--branco); font-size: 13px; color: var(--cinza-texto); border-radius: 0 0 8px 8px; }
+    .paginacao-btns { display: flex; gap: 6px; }
+    .btn-pag { border: 1px solid var(--cinza-borda); background: white; border-radius: 6px; padding: 7px 13px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Roboto', Arial, sans-serif; transition: all 0.15s; min-width: 38px; }
+    .btn-pag:hover:not(:disabled) { border-color: var(--vermelho); color: var(--vermelho); background: #fff5f5; }
     .btn-pag.ativo { background: var(--vermelho); color: white; border-color: var(--vermelho); }
-    .btn-pag:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-pag:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* CALENDÁRIO */
     .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -343,7 +343,7 @@
 
 <script>
   const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api'
-  const POR_PAG = 15
+  const POR_PAG = 10
 
   // Statuses que aparecem no painel (excluem buscas que nunca foram salvas)
   const STATUSES_PAINEL = [
@@ -496,9 +496,9 @@
 
     const totalPags = Math.ceil(total / POR_PAG)
     const pagDiv = document.getElementById('paginacao')
-    pagDiv.style.display = total > POR_PAG ? 'flex' : 'none'
+    pagDiv.style.display = 'flex'
     document.getElementById('pag-info').textContent =
-      `${inicio + 1}–${Math.min(inicio + POR_PAG, total)} de ${total}`
+      `${inicio + 1}–${Math.min(inicio + POR_PAG, total)} de ${total} demanda${total !== 1 ? 's' : ''}`
 
     const btns = document.getElementById('pag-btns')
     btns.innerHTML = ''
@@ -507,11 +507,17 @@
       btn.className = `btn-pag${ativo ? ' ativo' : ''}`
       btn.disabled = disabled
       btn.textContent = label
-      btn.onclick = () => { paginaAtual = pag; renderTabela() }
+      btn.onclick = () => { paginaAtual = pag; renderTabela(); window.scrollTo(0, 0) }
       btns.appendChild(btn)
     }
     addBtn('‹', paginaAtual - 1, false, paginaAtual === 1)
-    for (let p = 1; p <= totalPags; p++) addBtn(p, p, p === paginaAtual, false)
+    // Mostra no máximo 5 páginas numeradas ao redor da atual
+    const delta = 2
+    const rangeStart = Math.max(1, paginaAtual - delta)
+    const rangeEnd   = Math.min(totalPags, paginaAtual + delta)
+    if (rangeStart > 1) { addBtn('1', 1, false, false); if (rangeStart > 2) addBtn('…', null, false, true) }
+    for (let p = rangeStart; p <= rangeEnd; p++) addBtn(p, p, p === paginaAtual, false)
+    if (rangeEnd < totalPags) { if (rangeEnd < totalPags - 1) addBtn('…', null, false, true); addBtn(totalPags, totalPags, false, false) }
     addBtn('›', paginaAtual + 1, false, paginaAtual === totalPags)
   }
 

@@ -266,6 +266,8 @@ export async function executarMatching(params: {
     if (tags.length > 0) {
       const porPublico = elegíveisPorIdioma.filter((p: any) => {
         const publs: string = p.consultoras?.publicos ?? ''
+        // Sem público cadastrado = atende todos os públicos (sem restrição)
+        if (!publs || publs.trim() === '') return true
         return tags.some(tag => publs.includes(tag))
       })
       if (porPublico.length > 0) {
