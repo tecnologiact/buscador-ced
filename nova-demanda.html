@@ -513,13 +513,21 @@
           </div>
           <div class="campo">
             <label>Público-alvo</label>
-            <input type="text" id="publicoAlvo" placeholder="Ex: Lideranças, jovens talentos, trainees">
+            <select id="publicoAlvo">
+              <option value="">Selecione o público</option>
+              <option value="Estagiário">Estagiário</option>
+              <option value="Trainee">Trainee</option>
+              <option value="Trainee Expert">Trainee Expert</option>
+              <option value="Nova Liderança">Nova Liderança</option>
+              <option value="Média Liderança">Média Liderança</option>
+              <option value="Alta Liderança">Alta Liderança</option>
+            </select>
           </div>
         </div>
 
         <div class="campo campo-condicional" id="campo-localidade">
           <label>Localidade *</label>
-          <input type="text" id="localidade" placeholder="Ex: São Paulo – SP, Rio de Janeiro – RJ">
+          <input type="text" id="localidade" placeholder="Ex: São Paulo – SP" onblur="validarLocalidadeInline(this)">
           <p class="aviso-inline">📍 Obrigatório para presencial e híbrido.</p>
         </div>
 
@@ -773,13 +781,74 @@
     document.getElementById('localidade').required = needsLocal
   }
 
-  // ── VALIDAÇÃO DE LOCALIDADE (C13/C20) ────────────────────────────
+  // ── VALIDAÇÃO DE LOCALIDADE (IBGE) ───────────────────────────────
   const LOCALIDADE_INVALIDA = /^(a definir|tbd|tba|n\/a|na|x+|teste?s?|qualquer|nenhum|outro|indefinido|marte|lua|moon|mars|não sei|nao sei|em branco|branco|-)$/i
+  const UFS_VALIDAS = new Set(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'])
+
+  // Cache IBGE: Map<"sigla_uf" → Set<"nome_normalizado">>
+  let ibgeMunicipios = null
+  let ibgeCarregando = false
+
+  function normalizar(s) {
+    return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
+  }
+
+  async function carregarIBGE() {
+    if (ibgeMunicipios) return ibgeMunicipios
+    if (ibgeCarregando) {
+      // Aguarda carregamento em andamento
+      await new Promise(r => { const iv = setInterval(() => { if (!ibgeCarregando) { clearInterval(iv); r() } }, 100) })
+      return ibgeMunicipios
+    }
+    ibgeCarregando = true
+    try {
+      const res = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome')
+      const data = await res.json()
+      ibgeMunicipios = new Map()
+      data.forEach(m => {
+        const uf = m.microrregiao?.mesorregiao?.UF?.sigla ?? ''
+        if (!ibgeMunicipios.has(uf)) ibgeMunicipios.set(uf, new Set())
+        ibgeMunicipios.get(uf).add(normalizar(m.nome))
+      })
+    } catch { ibgeMunicipios = null }
+    ibgeCarregando = false
+    return ibgeMunicipios
+  }
+
+  // Carrega em background ao abrir a página
+  carregarIBGE()
+
+  // Valida sincronicamente (após carregamento) ou retorna null se IBGE indisponível
   function validarLocalidade(val) {
     if (!val || val.trim().length < 3) return 'Informe uma cidade válida (ex: São Paulo – SP).'
     const s = val.trim()
     if (LOCALIDADE_INVALIDA.test(s)) return 'Localidade inválida. Informe uma cidade real (ex: São Paulo – SP).'
     if (!/[a-záàãâäéèêëíìîïóòõôöúùûüç]/i.test(s)) return 'Informe uma cidade válida (ex: São Paulo – SP).'
+    return null // pré-validação OK — validação IBGE é assíncrona
+  }
+
+  async function validarLocalidadeIBGE(val) {
+    const erroBasico = validarLocalidade(val)
+    if (erroBasico) return erroBasico
+
+    // Extrai cidade e UF — aceita "– SP", "- SP", "(SP)", "SP" no final
+    const m = val.trim().match(/^(.+?)[\s\-–—]+([A-Z]{2})\s*$/)
+    if (!m) return 'Use o formato: Cidade – UF (ex: São Paulo – SP).'
+
+    const cidadeInput = normalizar(m[1])
+    const ufInput = m[2].toUpperCase()
+
+    if (!UFS_VALIDAS.has(ufInput)) return `"${ufInput}" não é uma sigla de estado válida.`
+
+    const mapa = await carregarIBGE()
+    if (!mapa) return null // IBGE indisponível — deixa passar
+
+    const cidadesUF = mapa.get(ufInput)
+    if (!cidadesUF) return `Nenhum município encontrado para ${ufInput}.`
+
+    if (!cidadesUF.has(cidadeInput)) {
+      return `"${m[1].trim()}" não é um município válido em ${ufInput}. Verifique o nome e a sigla do estado.`
+    }
     return null
   }
 
@@ -831,6 +900,30 @@
           style="background:none;border:none;color:white;cursor:pointer;font-size:14px;line-height:1;padding:0;margin-left:2px;">×</button>
       </span>`
     }).join('')
+  }
+
+  // Feedback inline ao sair do campo localidade
+  async function validarLocalidadeInline(input) {
+    const val = input.value.trim()
+    if (!val) return
+    const modalidade = document.getElementById('modalidade').value
+    if (modalidade !== 'presencial' && modalidade !== 'hibrido') return
+    const erro = await validarLocalidadeIBGE(val)
+    const aviso = input.parentElement.querySelector('.aviso-localidade-ibge')
+    if (erro) {
+      if (aviso) { aviso.textContent = '⚠ ' + erro; aviso.style.color = 'var(--vermelho)' }
+      else {
+        const p = document.createElement('p')
+        p.className = 'aviso-localidade-ibge'
+        p.style.cssText = 'font-size:12px;color:var(--vermelho);margin-top:4px;'
+        p.textContent = '⚠ ' + erro
+        input.parentElement.appendChild(p)
+      }
+      input.style.borderColor = 'var(--vermelho)'
+    } else {
+      if (aviso) aviso.remove()
+      input.style.borderColor = 'var(--verde)'
+    }
   }
 
   // ── PARSER DE OBSERVAÇÕES (C3) ───────────────────────────────────
@@ -930,7 +1023,7 @@
       return
     }
     if ((_modalidade === 'presencial' || _modalidade === 'hibrido') && _localidade) {
-      const erroLocal = validarLocalidade(_localidade)
+      const erroLocal = await validarLocalidadeIBGE(_localidade)
       if (erroLocal) {
         mostrarErroFormulario(erroLocal)
         btn.disabled = false; btn.textContent = 'Consultar Disponibilidade'
@@ -1333,7 +1426,7 @@
         if (!localidadeLinha) {
           erroLocal = 'Localidade obrigatória para modalidade presencial ou híbrido'
         } else {
-          const erroLoc = validarLocalidade(localidadeLinha)
+          const erroLoc = await validarLocalidadeIBGE(localidadeLinha)
           if (erroLoc) erroLocal = erroLoc
         }
       }
