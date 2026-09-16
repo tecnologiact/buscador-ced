@@ -433,6 +433,7 @@ async function acionarConsultora(
       horaFim:         demandaDados.hora_fim ?? demandaDados.horaFim,
       duracaoMinutos:  demandaDados.duracao_minutos ?? demandaDados.duracaoMinutos,
       modalidade:      demandaDados.modalidade,
+      publicoAlvo:     demandaDados.publico_alvo ?? demandaDados.publicoAlvo,
       observacoes:     demandaDados.observacoes,
       tokenAceite:     notif.token_resposta,
       tokenRecusa:     notif.token_resposta,

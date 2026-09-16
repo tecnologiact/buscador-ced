@@ -21,6 +21,7 @@ export interface DadosNotificacao {
   horaFim: string
   duracaoMinutos: number
   modalidade: string
+  publicoAlvo?: string
   observacoes?: string
   tokenAceite: string
   tokenRecusa: string
@@ -78,6 +79,11 @@ export async function enviarEmailAcionamento(
           <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Modalidade</td>
           <td style="padding: 10px; border: 1px solid #ddd;">${dados.modalidade}</td>
         </tr>
+        ${dados.publicoAlvo ? `
+        <tr style="background: #f5f5f5;">
+          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Público-alvo</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">${dados.publicoAlvo}</td>
+        </tr>` : ''}
         ${dados.observacoes ? `
         <tr style="background: #f5f5f5;">
           <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Observações</td>
